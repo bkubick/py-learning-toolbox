@@ -7,7 +7,8 @@
 from . import classification
 from . import export
 from . import history
+from . import image
 from . import regression
 
 
-__all__ = ['classification', 'export', 'history', 'regression']
+__all__ = ['classification', 'export', 'history', 'image', 'regression']
