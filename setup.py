@@ -18,4 +18,9 @@ setup(
         'tensorflow-hub>=0.14.0',
         'scikit-learn>=1.3.0',
     ],
+    entry_points={
+        'console_scripts': [
+            'pltb-setup-project = py_learning_toolbox.setup_project',
+        ],
+    },
 )
