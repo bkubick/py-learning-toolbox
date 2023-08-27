@@ -1,0 +1,11 @@
+matplotlib
+numpy
+pandas
+tensorboard
+tensorflow
+tensorflow-hub
+torch
+torchvision
+pydot
+pydotplus
+scikit-learn
