@@ -5,7 +5,5 @@
 
 from . import callbacks
 from . import learning_rate
-from . import visualization
 
-
-__all__ = ['callbacks', 'learning_rate', 'visualization']
+__all__ = ['callbacks', 'learning_rate']
