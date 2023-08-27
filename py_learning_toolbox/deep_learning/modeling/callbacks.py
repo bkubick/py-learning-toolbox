@@ -12,18 +12,19 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def generate_tensorboard_callback(dir_name: str, experiment_name: str) -> tf.keras.callbacks.TensorBoard:
+def generate_tensorboard_callback(experiment_name: str,
+                                  log_path: Optional[str] = None) -> tf.keras.callbacks.TensorBoard:
     """ Creates a TensorBoard callback.
-    
+
         Args:
-            dir_name: The directory name.
-            experiment_name: The experiment name.
+            experiment_name (str): The experiment name.
+            log_path (Optional[str]): The directory name.
 
         Returns:
             (tf.keras.callbacks.TensorBoard) The TensorBoard callback.
     """
-    log_dir = f"{dir_name}/{experiment_name}/{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}"
-    
+    log_dir = f"{log_path or 'logs'}/{experiment_name}/{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
     logger.info('TensorBoard callback created.')
     
@@ -47,7 +48,7 @@ def generate_checkpoint_callback(checkpoint_path: str,
         monitor = 'val_accuracy'
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_path,
+        filepath=checkpoint_path or 'checkpoints',
         monitor=monitor,
         save_weights_only=True,
         save_best_only=best_only,
@@ -68,7 +69,7 @@ def generate_csv_logger_callback(filename: str, logs_dir: Optional[str] = None) 
             (tf.keras.callbacks.CSVLogger) The CSV logger callback.
     """
     if logs_dir is None:
-        logs_dir = 'logs/csv'
+        logs_dir = 'logs'
 
     csv_logger = tf.keras.callbacks.CSVLogger(f'{logs_dir}/{filename}')
     return csv_logger
