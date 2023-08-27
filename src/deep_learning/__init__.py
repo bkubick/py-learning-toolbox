@@ -2,6 +2,7 @@
 
 from . import analysis
 from . import modeling
+from . import preprocessing
 
 
-__all__ = ['analysis', 'modeling']
+__all__ = ['analysis', 'modeling', 'preprocessing']
