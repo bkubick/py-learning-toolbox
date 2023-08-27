@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # coding: utf-8
 """ This module contains functions for setting up a new project. This includes functions for
     creating the directory structure for a new project.
@@ -9,7 +10,7 @@ import os
 import sys
 
 
-def create_project_directory(project_directory: str):
+def create_project_directories(project_directory: str) -> None:
     """ This function creates the directory structure for a new project.
 
     Args:
@@ -27,9 +28,19 @@ def create_project_directory(project_directory: str):
             os.mkdir(new_directory)
 
 
-if __name__ == '__main__':
+def main():
+    """ This function is the main function for the module. It is used to create the directory
+        structure for a new project.
+
+        Raises:
+            ValueError: If the project directory name or path is not provided.
+    """
     if len(sys.argv) != 2:
         raise ValueError('Please provide the project directory name or path')
 
     project_directory = sys.argv[1]
-    create_project_directory(project_directory)
+    create_project_directories(project_directory)
+
+
+if __name__ == '__main__':
+    main()
