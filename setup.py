@@ -20,7 +20,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pltb-setup-project = py_learning_toolbox.setup_project',
+            'pltb_setup_project = py_learning_toolbox.setup_project:main',
         ],
     },
 )
