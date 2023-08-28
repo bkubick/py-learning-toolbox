@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import io
+import os
 import typing
 
 if typing.TYPE_CHECKING:
@@ -37,6 +38,9 @@ def export_embedding_projector_data(embedded_layer_weights: tf.Tensor,
 
     if include_timestamp:
         embedding_data_filepath = f'{embedding_data_filepath}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
+
+    if not os.path.exists(embedding_data_filepath):
+        os.makedirs(embedding_data_filepath)
 
     out_v = io.open(f'{embedding_data_filepath}/vectors.tsv', 'w', encoding='utf-8')
     out_m = io.open(f'{embedding_data_filepath}/metadata.tsv', 'w', encoding='utf-8')
