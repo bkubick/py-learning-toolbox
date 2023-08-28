@@ -5,8 +5,7 @@ from __future__ import absolute_import
 import io
 import typing
 
-if typing.TYPE_CHECKING:
-    import tensorflow as tf
+import tensorflow as tf
 
 
 __all__ = ['export_embedding_projector_data']
