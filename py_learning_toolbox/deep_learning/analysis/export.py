@@ -5,13 +5,16 @@ from __future__ import absolute_import
 import io
 import typing
 
-import tensorflow as tf
+if typing.TYPE_CHECKING:
+    import tensorflow as tf
 
 
 __all__ = ['export_embedding_projector_data']
 
 
-def export_embedding_projector_data(embedded_layer_weights: tf.Tensor, words_in_vocab: typing.List[str], filepath: typing.Optional[str] = None):
+def export_embedding_projector_data(embedded_layer_weights: tf.Tensor,
+                                    vocabulary: typing.List[str],
+                                    filepath: typing.Optional[str] = None):
     """ Exports the embedding projector data to filenames listed below.
         - vectors.tsv : The embedding vectors.
         - metadata.tsv : The words in the vocabulary.
@@ -23,7 +26,7 @@ def export_embedding_projector_data(embedded_layer_weights: tf.Tensor, words_in_
 
         Args:
             embedded_layer_weights (tf.Tensor): The weights of the embedded layer.
-            words_in_vocab (typing.List[str]): The words in the vocabulary.
+            vocabulary (typing.List[str]): The words in the vocabulary.
             filepath (str): The filepath to save the data to.
     """
     # Create embedding files (These will be uploaded to the embedding projector)
@@ -32,7 +35,7 @@ def export_embedding_projector_data(embedded_layer_weights: tf.Tensor, words_in_
     out_v = io.open(f'{embedding_data_filepath}/vectors.tsv', 'w', encoding='utf-8')
     out_m = io.open(f'{embedding_data_filepath}/metadata.tsv', 'w', encoding='utf-8')
 
-    for index, word in enumerate(words_in_vocab):
+    for index, word in enumerate(vocabulary):
         if index == 0:
             continue  # skip 0, it's padding.
 
@@ -40,5 +43,5 @@ def export_embedding_projector_data(embedded_layer_weights: tf.Tensor, words_in_
         out_v.write('\t'.join([str(x) for x in vec]) + "\n")
         out_m.write(word + "\n")
 
-        out_v.close()
-        out_m.close()
+    out_v.close()
+    out_m.close()
