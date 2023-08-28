@@ -142,7 +142,7 @@ def plot_confusion_matrix(y_true: ArrayLike,
                     size=cell_text_size)
 
 
-def plot_classification_report(y_labels: ArrayLike, y_pred: ArrayLike, class_names: ArrayLike[int]) -> None:
+def plot_classification_report(y_labels: ArrayLike, y_pred: ArrayLike, class_names: ArrayLike) -> None:
     """ Plots the classification report.
     
         Args:
