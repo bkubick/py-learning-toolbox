@@ -1,4 +1,6 @@
 # coding: utf-8
+from __future__ import annotations
+
 import datetime as dt
 import logging
 from typing import Optional
@@ -13,63 +15,87 @@ logger.setLevel(logging.INFO)
 
 
 def generate_tensorboard_callback(experiment_name: str,
-                                  log_path: Optional[str] = None) -> tf.keras.callbacks.TensorBoard:
+                                  filepath: Optional[str] = None,
+                                  include_timestamp: bool = True) -> tf.keras.callbacks.TensorBoard:
     """ Creates a TensorBoard callback.
 
         Args:
             experiment_name (str): The experiment name.
-            log_path (Optional[str]): The directory name.
+            filepath (Optional[str]): The directory name.
+            include_timestamp (bool): Whether to include the timestamp in the filename.
 
         Returns:
             (tf.keras.callbacks.TensorBoard) The TensorBoard callback.
     """
-    log_dir = f"{log_path or 'logs'}/{experiment_name}/{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    log_dir = f'{filepath or "logs"}/{experiment_name}'
+    if include_timestamp:
+        log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
-    logger.info('TensorBoard callback created.')
-    
+
+    logger.info(f'TensorBoard callback for {log_dir}')
+
     return tensorboard_callback
 
 
-def generate_checkpoint_callback(checkpoint_path: str,
+def generate_checkpoint_callback(experiment_name: str,
+                                 filepath: Optional[str] = None,
                                  monitor: Optional[str] = None,
-                                 best_only: bool = True) -> tf.keras.callbacks.ModelCheckpoint:
+                                 best_only: bool = True,
+                                 include_timestamp: bool = True) -> tf.keras.callbacks.ModelCheckpoint:
     """ Generates a checkpoint callback.
 
         Args:
-            checkpoint_path (str): The path to save the checkpoint to.
+            experiment_name (str): The experiment name.
+            filepath (Optional[str]): The directory name.
             monitor (Optional[str]): The metric to monitor.
             best_only (bool): Whether to save only the best model.
+            include_timestamp (bool): Whether to include the timestamp in the filename.
         
         Returns:
             (tf.keras.callbacks.ModelCheckpoint) The checkpoint callback.
     """
-    if monitor is None:
-        monitor = 'val_accuracy'
+    log_dir = f'{filepath or "checkpoints"}/{experiment_name}'
+    if include_timestamp:
+        log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_path or 'checkpoints',
-        monitor=monitor,
+        filepath=log_dir,
+        monitor=monitor or 'val_accuracy',
         save_weights_only=True,
         save_best_only=best_only,
         save_freq='epoch',
         verbose=1)
 
+    logger.info(f'Checkpoint callback for {log_dir}')
+
     return checkpoint
 
 
-def generate_csv_logger_callback(filename: str, logs_dir: Optional[str] = None) -> tf.keras.callbacks.CSVLogger:
+def generate_csv_logger_callback(experiment_name: str,
+                                 filepath: Optional[str] = None,
+                                 filename: Optional[str] = None,
+                                 include_timestamp: bool = True) -> tf.keras.callbacks.CSVLogger:
     """ Generates a CSV logger callback.
     
         Args:
-            filename (str): The filename of the CSV logger.
-            logs_dir (Optional[str]): The directory to save the CSV logger to.
+            experiment_name (str): The experiment name.
+            filepath (Optional[str]): The directory name.
+            filename (str): The filename of the CSV file (defaults to "epoch_results.csv").
+            include_timestamp (bool): Whether to include the timestamp in the filename.
         
         Returns:
             (tf.keras.callbacks.CSVLogger) The CSV logger callback.
     """
-    if logs_dir is None:
-        logs_dir = 'logs'
+    log_dir = f'{filepath or "logs"}/{experiment_name}'
+    if include_timestamp:
+        log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
-    csv_logger = tf.keras.callbacks.CSVLogger(f'{logs_dir}/{filename}')
+    if filename and not filename.endswith('.csv'):
+        filename = f'{filename}.csv'
+
+    csv_logger = tf.keras.callbacks.CSVLogger(f'{log_dir}/{filename or "epoch_results.csv"}')
+
+    logger.info(f'CSV Logger callback for {log_dir}')
+
     return csv_logger
