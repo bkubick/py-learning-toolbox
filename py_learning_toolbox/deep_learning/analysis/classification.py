@@ -69,12 +69,12 @@ def generate_prediction_metrics(y_true: ArrayLike, y_pred: ArrayLike) -> Predict
 
 
 def plot_confusion_matrix(y_true: ArrayLike,
-                              y_pred: ArrayLike,
-                              label_text_size: int = 20,
-                              cell_text_size: int = 10,
-                              classes: typing.Optional[ArrayLike] = None,
-                              figsize: typing.Optional[typing.Tuple[int, int]] = (15, 15),
-                              norm: bool = False) -> None:
+                          y_pred: ArrayLike,
+                          label_text_size: int = 20,
+                          cell_text_size: int = 10,
+                          classes: typing.Optional[ArrayLike] = None,
+                          figsize: typing.Optional[typing.Tuple[int, int]] = (15, 15),
+                          norm: bool = False) -> None:
     """ Plots a confusion matrix using Seaborn's heatmap. 
     
         Args:
