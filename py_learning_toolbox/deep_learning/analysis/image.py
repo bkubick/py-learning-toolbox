@@ -10,6 +10,7 @@ import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 if typing.TYPE_CHECKING:
@@ -20,9 +21,11 @@ if typing.TYPE_CHECKING:
 
 __all__ = [
     'get_classnames_from_directory',
+    'get_filepaths_from_dataset',
+    'get_top_n_mislabeled_images',
     'load_and_resize_image',
-    'plot_image',
-    'plot_images',
+    'plot_image_by_index',
+    'plot_images_by_indices',
     'plot_random_image_label_and_prediction',
     'summarize_directory',
 ]
@@ -59,8 +62,72 @@ def get_classnames_from_directory(directory: pathlib.Path) -> np.ndarray:
     return class_names
 
 
-def plot_image(index: int, images: ArrayLike, labels: ArrayLike, class_names: typing.List[str], black_and_white: bool = False):
-    """ Plots an image from the dataset.
+def get_filepaths_from_dataset(dataset: tf.data.Dataset, data_filepath: str) -> typing.List[str]:
+    """ Gets the image filepaths from the dataset.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset.
+            data_filepath (str): The filepath to the data.
+
+        Returns:
+            (List[str]) The image filepaths.
+    """
+    image_file_types = ['jpg', 'jpeg', 'png']
+    image_file_paths = [f'{data_filepath}/*/*.{file_type}' for file_type in image_file_types]
+
+    filepaths = []
+    for filepath in dataset.list_files(image_file_paths, shuffle=False):
+        filepaths.append(filepath.numpy())
+    
+    return filepaths
+
+
+def get_top_n_mislabeled_images(y_true: ArrayLike,
+                                y_pred_probs: ArrayLike,
+                                filepaths: typing.List[str],
+                                class_names: typing.List[str],
+                                n: int = 100) -> pd.DataFrame:
+    """ Gets the top n most mislabeled images.
+
+        The DataFrame will contain the following columns:
+            - filepath
+            - y_true
+            - y_pred
+            - y_pred_prob
+            - y_true_classname
+            - y_pred_classname
+
+        Args:
+            y_true (ArrayLike): The true labels.
+            y_pred_probs (ArrayLike): The predicted probabilities.
+            filepaths (List[str]): The filepaths to the images.
+            class_names (List[str]): The names of the classes.
+            n (int): The number of images to return.
+
+        Returns:
+            (pd.DataFrame) The top n most mislabeled images.
+    """
+    y_pred = y_pred_probs.argmax(axis=1)
+
+    df = pd.DataFrame({
+        'filepath': filepaths,
+        'y_true': y_true,
+        'y_pred': y_pred,
+        'y_pred_prob': y_pred_probs.max(axis=1),
+        'y_true_classname': [class_names[i] for i in y_true],
+        'y_pred_classname': [class_names[i] for i in y_pred],
+    })
+
+    top_n_mislabled_images_df = df[df['y_true'] != df['y_pred']].sort_values('y_pred_prob', ascending=False)[:n]
+    return top_n_mislabled_images_df
+
+
+def plot_image_by_index(index: int,
+                        images: ArrayLike,
+                        labels: ArrayLike,
+                        class_names: typing.List[str],
+                        black_and_white: bool = False) -> None:
+    """ Plots an image from the dataset by the given index and list of images.
 
         Args:
             index (int): The index of the image to plot.
@@ -77,11 +144,11 @@ def plot_image(index: int, images: ArrayLike, labels: ArrayLike, class_names: ty
     plt.title(class_names[labels[index]])
 
 
-def plot_images(indexes: typing.List[int],
-                images: ArrayLike,
-                labels: ArrayLike,
-                class_names: typing.List[str],
-                black_and_white: bool = False):
+def plot_images_by_indices(indexes: typing.List[int],
+                           images: ArrayLike,
+                           labels: ArrayLike,
+                           class_names: typing.List[str],
+                           black_and_white: bool = False) -> None:
     """ Plots each image from the dataset at each corresponding index.
 
         Raises:
@@ -113,7 +180,7 @@ def plot_random_image_label_and_prediction(images: ArrayLike,
                                            true_labels: ArrayLike,
                                            pred_probabilities: ArrayLike,
                                            class_names: typing.List[str],
-                                           black_and_white: bool = False):
+                                           black_and_white: bool = False) -> None:
     """ Plots a random image from the dataset.
 
         NOTE: images and labels must be the same length.
