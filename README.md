@@ -11,10 +11,10 @@ pip install py-learning-toolbox@git+https://github.com/bkubick/py-learning-toolb
 ```
 
 ## Importing
-This package can only be used by importing submodules. This cannot be used by importing the entire `py_learning_toolbox` library to limit performance requirements on some of the utilities. For instance, if you want to utilize the `deep_learning` module utilities, you can run the following import statement to access all the deep learning tools through the `deep_learning` namespace.
+This package can only be used by importing submodules. This cannot be used by importing the entire `py_learning_toolbox` library to limit performance requirements on some of the utilities. For instance, if you want to utilize the `dl_toolbox` module utilities, you can run the following import statement to access all the deep learning tools through the `dl_toolbox` namespace.
 
 ```
-from py_learning_toolbox import deep_learning
+from py_learning_toolbox import dl_toolbox
 ```
 
 ## Project Setup
