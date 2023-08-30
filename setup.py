@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='py-learning-toolbox',
-    version='0.0.3',
+    version='0.0.4',
     description='Python toolbox for my perosnal AI, machine learning, genetic algorithms, and deep learning projects.',
     author='Brandon Kubick',
     packages=find_packages(),
