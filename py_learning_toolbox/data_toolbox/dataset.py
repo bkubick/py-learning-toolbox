@@ -8,7 +8,9 @@ import typing
 from sklearn.model_selection import train_test_split
 
 
-__all__ = ['Dataset', 'get_split_dataset_from_data']
+__all__ = ['Dataset', 'get_dataset_from_data', 'get_split_dataset_from_data', 'get_dataset_from_train_test_val']
+
+T = typing.TypeVar('T')
 
 
 class SeparatedData(typing.NamedTuple):
@@ -23,7 +25,7 @@ class SeparatedData(typing.NamedTuple):
 
 
 @dataclass(frozen=True)
-class Dataset:
+class Dataset(typing.Generic[T]):
     """ A class for storing data.
     
         Attributes:
@@ -31,9 +33,9 @@ class Dataset:
             val: The validation data.
             test: The testing data.
     """
-    train: typing.Optional[typing.Union[SeparatedData, typing.Any]]
-    test: typing.Optional[typing.Union[SeparatedData, typing.Any]] = None
-    val: typing.Optional[typing.Union[SeparatedData, typing.Any]] = None
+    train: T
+    test: typing.Optional[T] = None
+    val: typing.Optional[T] = None
 
     @property
     def train_size(self) -> int:
@@ -99,7 +101,36 @@ def get_split_dataset_from_data(X_data: typing.Any,
         test=SeparatedData(X=X_test, y=y_test))
 
 
-def get_dataset_from_train_test_val(train_data: typing.Any, test_data: typing.Any, val_data: typing.Any) -> Dataset:
+def get_dataset_from_data(X_train: T,
+                          y_train: T,
+                          X_test: T,
+                          y_test: T,
+                          X_val: T,
+                          y_val: T) -> Dataset:
+    """ Gets a dataset from the data.
+
+        Args:
+            X_train (T): The data.
+            y_train (T): The labels.
+            X_test (T): The testing data.
+            y_test (T): The testing labels.
+            X_val (T): The validation data.
+            y_val (T): The validation labels.
+
+        Raises:
+            AssertionError: If the data types of the data are not the same.
+
+        Returns:
+            (Dataset) The dataset.
+    """
+    assert type(X_train)== type(X_test) == type(X_val)
+
+    return Dataset(train=SeparatedData(X=X_train, y=y_train),
+                   test=SeparatedData(X=X_test, y=y_test),
+                   val=SeparatedData(X=X_val, y=y_val))
+
+
+def get_dataset_from_train_test_val(train_data: T, test_data: T, val_data: T) -> Dataset[T]:
     """ Gets a dataset from the training, testing, and validation data.
 
         Args:

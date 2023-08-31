@@ -3,12 +3,13 @@
     structuring datasets.
 """
 
-from .dataset import Dataset, get_dataset_from_train_test_val, get_split_dataset_from_data
+from .dataset import Dataset, get_dataset_from_data, get_dataset_from_train_test_val, get_split_dataset_from_data
 from .utils import read_txt_file_from_directory, read_txt_file_from_url
 
 
 __all__ = [
     'Dataset',
+    'get_dataset_from_data',
     'get_dataset_from_train_test_val',
     'get_split_dataset_from_data',
     'read_txt_file_from_directory',
