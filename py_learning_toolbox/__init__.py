@@ -3,4 +3,4 @@
 
 __License__ = 'MIT License'
 __status__ = 'Development'
-__version__ = '0.0.5'
+__version__ = '0.0.0-dev'
