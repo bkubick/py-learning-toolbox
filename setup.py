@@ -10,13 +10,13 @@ setup(
     author='Brandon Kubick',
     packages=find_packages(),
     install_requires=[
-        'matplotlib>=3.7.2',
-        'numpy>=1.24.3',
-        'pandas>=2.0.3',
-        'tensorboard>=2.13.0',
-        'tensorflow>=2.13.0',
+        'matplotlib>=3.7.1',
+        'numpy>=1.23.5',
+        'pandas>=1.5.3',
+        'scikit-learn>=1.2.2',
+        'tensorboard>=2.12.3',
+        'tensorflow>=2.12.0',
         'tensorflow-hub>=0.14.0',
-        'scikit-learn>=1.3.0',
     ],
     entry_points={
         'console_scripts': [
