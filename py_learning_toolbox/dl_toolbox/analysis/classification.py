@@ -18,7 +18,13 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['PredictionMetrics', 'generate_prediction_metrics', 'plot_confusion_matrix', 'plot_classification_report']
+__all__ = [
+    'PredictionMetrics',
+    'generate_prediction_metrics',
+    'generate_prediction_metrics_dataframe',
+    'plot_confusion_matrix',
+    'plot_classification_report',
+]
 
 
 @dataclass
@@ -30,11 +36,13 @@ class PredictionMetrics:
             precision (float): The precision.
             recall (float): The recall.
             f1 (float): The f1 score.
+            name (Optional[str]): The name of the corresponding experiment.
     """
     accuracy: float
     precision: float
     recall: float
     f1: float
+    name: typing.Optional[str] = None
 
     def __iter__(self):
         """ Iterates over the dataclass."""
@@ -66,6 +74,23 @@ def generate_prediction_metrics(y_true: ArrayLike, y_pred: ArrayLike) -> Predict
         precision=precision_score(y_true, y_pred, average='weighted'),
         recall=recall_score(y_true, y_pred, average='weighted'),
         f1=f1_score(y_true, y_pred, average='weighted'))
+
+
+def generate_prediction_metrics_dataframe(all_prediction_metrics: typing.List[PredictionMetrics]) -> pd.DataFrame:
+    """ Creates a dataframe of the prediction metrics.
+
+        Args:
+            all_prediction_metrics (List[PredictionMetrics]): The prediction metrics.
+
+        Returns:
+            (pd.DataFrame) The prediction metrics dataframe.
+    """
+    all_results = {}
+    for index, prediction_metrics in enumerate(all_prediction_metrics):
+        prediction_name = prediction_metrics.name or f'model_{index}'
+        all_results[prediction_name] = dict(prediction_metrics)
+
+    return pd.DataFrame(all_results).transpose()
 
 
 def plot_confusion_matrix(y_true: ArrayLike,
