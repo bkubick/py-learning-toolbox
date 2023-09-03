@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import time
 import typing
 
+import pandas as pd
+
 if typing.TYPE_CHECKING:
     import numpy as np
     from sklearn.pipeline import Pipeline
@@ -15,35 +17,50 @@ if typing.TYPE_CHECKING:
     ImplementsPredict = typing.Union[tf.keras.Model, Pipeline]
 
 
-__all__ = ['ModelPerformance', 'prediction_timer']
+__all__ = ['generate_performance_dataframe', 'Performance', 'time_predictions']
 
 
 @dataclass()
-class ModelPerformance:
+class Performance:
     """ A dataclass for storing performance metrics.
     
-        Args:
+        Attributes:
             total_time (float): The total time.
             total_predictions (int): The total number of predictions.
+            name (Optional[str]): The name of the corresponding experiment.
+        
+        Properties:
+            time_per_prediction (float): The time per prediction.
     """
     total_time: float
     total_predictions: int
+    name: typing.Optional[str] = None
 
     @property
     def time_per_prediction(self) -> float:
         """ The time per prediction."""
         return self.total_time / self.total_predictions
 
+    def __iter__(self):
+        """ Iterates over the dataclass, including computed properties."""
+        all_attributes_dict = self.__dict__
+        all_attributes_dict['time_per_prediction'] = self.time_per_prediction
+        for key, value in all_attributes_dict.items():
+            yield key, value
 
-def prediction_timer(model: ImplementsPredict, data_to_predict: Dataset) -> ModelPerformance:
-    """ Timer for how long a model takes to make predictions on samples.
+
+def time_predictions(model: ImplementsPredict,
+                     data_to_predict: Dataset,
+                     name: typing.Optional[str] = None) -> Performance:
+    """ Timer for how long a model takes to make predictions on Performance.
 
         Args:
             model (tf.keras.Model): The model to run performance metrics on.
             data_to_predict (Dataset): The data to make predictions on.
+            name (Optional[str]): The name of the corresponding experiment.
 
         Returns:
-            (ModelPerformance) The model performance.        
+            (Performance) The model performance.        
     """
     start_time = time.perf_counter()
     _ = model.predict(data_to_predict)
@@ -51,4 +68,21 @@ def prediction_timer(model: ImplementsPredict, data_to_predict: Dataset) -> Mode
 
     total_time = end_time - start_time
 
-    return ModelPerformance(total_time=total_time, total_predictions=len(data_to_predict))
+    return Performance(total_time=total_time, total_predictions=len(data_to_predict), name=name)
+
+
+def generate_performance_dataframe(performance_metrics: typing.List[Performance]) -> pd.DataFrame:
+    """ Generates a dataframe from the performance metrics.
+
+        Args:
+            performance_metrics (List[Performance]): The performance metrics.
+
+        Returns:
+            (pd.DataFrame) The dataframe of all the performance metrics.
+    """
+    performance_dict = {}
+    for index, metric in enumerate(performance_metrics):
+        name = metric.name or f'experiment_{index}'
+        performance_dict[name] = metric.time_per_prediction
+
+    return pd.DataFrame(performance_dict).transpose()
