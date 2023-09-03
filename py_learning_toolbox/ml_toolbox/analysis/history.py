@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import typing
 
 import matplotlib.pyplot as plt
@@ -13,7 +14,74 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['plot_history', 'plot_histories', 'plot_learning_rate_versus_loss']
+__all__ = ['export_history', 'import_history', 'plot_history', 'plot_histories', 'plot_learning_rate_versus_loss']
+
+
+def export_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.DataFrame],
+                   experiment_name: str,
+                   filepath: typing.Optional[str] = None,
+                   file_format: typing.Optional[str] = None,
+                   include_timestamp: bool = True) -> None:
+    """ Exports the history to a file of either .json or .csv under the experiment directory.
+
+        Note: If the filepath is not specified, the history will be saved to the 'logs' directory.
+    
+        Raises:
+            TypeError: If the type of history is not supported.
+            ValueError: If the file format is not supported.
+            
+        Args:
+            history (Union[tf.keras.callbacks.History, dict, pd.DataFrame]): The history object returned
+                by the fit method.
+            experiment_name (str): The experiment name.
+            filepath (Optional[str]): The filepath to save the history to.
+            file_format (Optional[str]): The file format to save the history to.
+            include_timestamp (bool): Whether to include the timestamp in the filepath.
+    """
+    file_format = file_format or 'csv'
+    if file_format not in {'json', 'csv'}:
+        raise ValueError(f'Invalid file format: {file_format}')
+
+    log_dir = f'{filepath or "logs"}/{experiment_name}'
+    if include_timestamp:
+        log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
+
+    if isinstance(history, tf.keras.callbacks.History):
+        history_df = pd.DataFrame(history.history)
+    elif isinstance(history, dict):
+        history_df = pd.DataFrame(history)
+    elif isinstance(history, pd.DataFrame):
+        history_df = history
+    else:
+        raise TypeError(f'Invalid type for history: {type(history)}')
+
+    filename = f'history.{file_format}'
+    if file_format == 'json':
+        history_df.to_json(f'{log_dir}/{filename}')
+    else:
+        history_df.to_csv(f'{log_dir}/{filename}')
+
+
+def import_history(filepath: str) -> pd.DataFrame:
+    """ Imports the history from a file of either .json or .csv and converts to pd dataframe.
+    
+        Raises:
+            ValueError: If the filepath is invalid.
+            
+        Args:
+            filepath (str): The filepath to save the history to.
+            
+        Returns:
+            pd.DataFrame: The history.
+    """
+    if filepath.endswith('.json'):
+        history = pd.read_json(filepath)
+    elif filepath.endswith('.csv'):
+        history = pd.read_csv(filepath)
+    else:
+        raise ValueError(f'Invalid filepath: {filepath}')
+
+    return history
 
 
 def plot_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.DataFrame],
