@@ -3,7 +3,7 @@
     structuring data.
 """
 
-from .utils import read_txt_file_from_directory, read_txt_file_from_url
+from .reading import read_txt_file_from_directory, read_txt_file_from_url
 
 
 __all__ = [
