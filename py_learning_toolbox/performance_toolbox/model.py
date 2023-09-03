@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from sklearn.pipeline import Pipeline
     import tensorflow as tf
 
-    ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
+    Dataset = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray, tf.data.Dataset]
     ImplementsPredict = typing.Union[tf.keras.Model, Pipeline]
 
 
@@ -35,12 +35,12 @@ class ModelPerformance:
         return self.total_time / self.total_predictions
 
 
-def prediction_timer(model: ImplementsPredict, data_to_predict: ArrayLike) -> ModelPerformance:
+def prediction_timer(model: ImplementsPredict, data_to_predict: Dataset) -> ModelPerformance:
     """ Timer for how long a model takes to make predictions on samples.
 
         Args:
             model (tf.keras.Model): The model to run performance metrics on.
-            data (ArrayLike): The data to make predictions on.
+            data_to_predict (Dataset): The data to make predictions on.
 
         Returns:
             (ModelPerformance) The model performance.        
