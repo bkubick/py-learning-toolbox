@@ -5,11 +5,11 @@
 """
 
 from . import classification
-from . import export
 from . import history
 from . import image
 from . import model
 from . import regression
+from . import sequence
 
 
-__all__ = ['classification', 'export', 'history', 'image', 'model', 'regression']
+__all__ = ['classification', 'history', 'image', 'model', 'regression', 'sequence']
