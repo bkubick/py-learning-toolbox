@@ -93,6 +93,7 @@ def generate_prediction_metrics_dataframe(all_prediction_metrics: typing.List[Pr
     for index, prediction_metrics in enumerate(all_prediction_metrics):
         prediction_name = prediction_metrics.name or f'model_{index}'
         all_results[prediction_name] = dict(prediction_metrics)
+        all_results[prediction_name].pop('name')
 
     return pd.DataFrame(all_results).transpose()
 

@@ -83,6 +83,7 @@ def generate_performance_dataframe(performance_metrics: typing.List[Performance]
     performance_dict = {}
     for index, metric in enumerate(performance_metrics):
         name = metric.name or f'experiment_{index}'
-        performance_dict[name] = metric.time_per_prediction
+        performance_dict[name] = dict(metric)
+        performance_dict[name].pop('name')
 
     return pd.DataFrame(performance_dict).transpose()
