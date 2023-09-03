@@ -54,7 +54,9 @@ class PredictionMetrics:
         return f'Accuracy: {self.accuracy} \nPrecision: {self.precision} \nRecall: {self.recall} \nF1: {self.f1}'
 
 
-def generate_prediction_metrics(y_true: ArrayLike, y_pred: ArrayLike) -> PredictionMetrics:
+def generate_prediction_metrics(y_true: ArrayLike,
+                                y_pred: ArrayLike,
+                                name: typing.Optional[str] = None) -> PredictionMetrics:
     """ Evaluates the model predictions using the following metrics:
 
         - Accuracy
@@ -65,6 +67,7 @@ def generate_prediction_metrics(y_true: ArrayLike, y_pred: ArrayLike) -> Predict
         Args:
             y_true (ArrayLike): The true labels.
             y_pred (ArrayLike): The predicted labels.
+            name (Optional[str]): The name to assign to the metrics
 
         Returns:
             PredictionMetrics: The prediction metrics.
@@ -73,7 +76,8 @@ def generate_prediction_metrics(y_true: ArrayLike, y_pred: ArrayLike) -> Predict
         accuracy=accuracy_score(y_true, y_pred),
         precision=precision_score(y_true, y_pred, average='weighted'),
         recall=recall_score(y_true, y_pred, average='weighted'),
-        f1=f1_score(y_true, y_pred, average='weighted'))
+        f1=f1_score(y_true, y_pred, average='weighted'),
+        name=name)
 
 
 def generate_prediction_metrics_dataframe(all_prediction_metrics: typing.List[PredictionMetrics]) -> pd.DataFrame:
