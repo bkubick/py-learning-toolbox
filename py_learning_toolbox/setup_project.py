@@ -13,14 +13,22 @@ import sys
 def create_project_directories(project_directory: str) -> None:
     """ This function creates the directory structure for a new project.
 
-    Args:
-        project_directory (str): The path to the project directory.
+        The following directory structure is created:
+
+        project_directory
+        ├── checkpoints
+        ├── data
+        ├── logs
+        └── models
+
+        Args:
+            project_directory (str): The path to the project directory.
     """
     if not os.path.exists(project_directory):
         os.mkdir(project_directory)
 
     # Create the directory structure for the project
-    directories = ['checkpoints', 'data', 'logs', 'models', 'notebooks']
+    directories = ['checkpoints', 'data', 'logs', 'models']
 
     for directory in directories:
         new_directory = f'{project_directory}/{directory}'
