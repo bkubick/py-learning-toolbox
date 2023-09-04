@@ -7,9 +7,9 @@
 from . import classification
 from . import history
 from . import image
+from . import language
 from . import model
 from . import regression
-from . import sequence
 
 
-__all__ = ['classification', 'history', 'image', 'model', 'regression', 'sequence']
+__all__ = ['classification', 'history', 'image', 'language', 'model', 'regression']
