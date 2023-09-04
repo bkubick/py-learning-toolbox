@@ -19,7 +19,7 @@ if typing.TYPE_CHECKING:
 
 
 __all__ = [
-    'PredictionMetrics',
+    'ClassificationPredictionMetrics',
     'generate_prediction_metrics',
     'generate_prediction_metrics_dataframe',
     'plot_confusion_matrix',
@@ -27,11 +27,11 @@ __all__ = [
 ]
 
 
-@dataclass
-class PredictionMetrics:
+@dataclass()
+class ClassificationPredictionMetrics:
     """ A dataclass for prediction metrics.
     
-        Args:
+        Attributes:
             accuracy (float): The accuracy.
             precision (float): The precision.
             recall (float): The recall.
@@ -49,14 +49,10 @@ class PredictionMetrics:
         for key, value in self.__dict__.items():
             yield key, value
 
-    def __str__(self) -> str:
-        """ Returns the string representation of the dataclass."""
-        return f'Accuracy: {self.accuracy} \nPrecision: {self.precision} \nRecall: {self.recall} \nF1: {self.f1}'
-
 
 def generate_prediction_metrics(y_true: ArrayLike,
                                 y_pred: ArrayLike,
-                                name: typing.Optional[str] = None) -> PredictionMetrics:
+                                name: typing.Optional[str] = None) -> ClassificationPredictionMetrics:
     """ Evaluates the model predictions using the following metrics:
 
         - Accuracy
@@ -70,9 +66,9 @@ def generate_prediction_metrics(y_true: ArrayLike,
             name (Optional[str]): The name to assign to the metrics
 
         Returns:
-            PredictionMetrics: The prediction metrics.
+            ClassificationPredictionMetrics: The prediction metrics.
     """
-    return PredictionMetrics(
+    return ClassificationPredictionMetrics(
         accuracy=accuracy_score(y_true, y_pred),
         precision=precision_score(y_true, y_pred, average='weighted'),
         recall=recall_score(y_true, y_pred, average='weighted'),
@@ -80,11 +76,12 @@ def generate_prediction_metrics(y_true: ArrayLike,
         name=name)
 
 
-def generate_prediction_metrics_dataframe(all_prediction_metrics: typing.List[PredictionMetrics]) -> pd.DataFrame:
+def generate_prediction_metrics_dataframe(
+        all_prediction_metrics: typing.List[ClassificationPredictionMetrics]) -> pd.DataFrame:
     """ Creates a dataframe of the prediction metrics.
 
         Args:
-            all_prediction_metrics (List[PredictionMetrics]): The prediction metrics.
+            all_prediction_metrics (List[ClassificationPredictionMetrics]): The prediction metrics.
 
         Returns:
             (pd.DataFrame) The prediction metrics dataframe.
