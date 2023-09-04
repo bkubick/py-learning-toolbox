@@ -1,4 +1,5 @@
 # coding: utf-8
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -53,7 +54,9 @@ class RegressionPredictionMetrics:
 def generate_prediction_metrics(y_true: ArrayLike,
                                 y_pred: ArrayLike,
                                 name: typing.Optional[str] = None) -> RegressionPredictionMetrics:
-    """ Evaluates the model predictions using the following metrics:
+    """ Evaluates the model predictions using the metrics listed below.
+
+        NOTE: This function aggregates the metrics for multi-dimensional values using the mean.
 
         - mean absolute error (MAE)
         - mean squared error (MSE)
@@ -61,7 +64,7 @@ def generate_prediction_metrics(y_true: ArrayLike,
         - mean absolute percentage error (MAPE)
         - mean absolute scaled error (MASE)
         - huber loss
-    
+
         Args:
             y_true (ArrayLike): The true values.
             y_pred (ArrayLike): The predicted values.
@@ -70,16 +73,34 @@ def generate_prediction_metrics(y_true: ArrayLike,
         Returns:
             RegressionPredictionMetrics: The regression prediction metrics.
     """
-    mse = tf.keras.metrics.mean_squared_error(y_true, y_pred).numpy()
-    mase = tf.keras.metrics.mean_absolute_error(y_true, y_pred).numpy() / np.mean(np.abs(np.diff(y_true)))
-    huber = tf.keras.losses.Huber()(y_true, y_pred).numpy()
+    mae = tf.keras.metrics.mean_absolute_error(y_true, y_pred)
+    mse = tf.keras.metrics.mean_squared_error(y_true, y_pred)
+    rmse = tf.sqrt(mse)
+    mape = tf.keras.metrics.mean_absolute_percentage_error(y_true, y_pred)
+    mase = tf.keras.metrics.mean_absolute_error(y_true, y_pred) / tf.reduce_mean(tf.abs(np.diff(y_true)))
+    huber = tf.keras.losses.Huber()(y_true, y_pred)
+
+    # Taking into account multi-dimensional metrics
+    if mae.ndim > 0:
+        mae = tf.reduce_mean(mae)
+    if mse.ndim > 0:
+        mse = tf.reduce_mean(mse)
+    if rmse.ndim > 0:
+        rmse = tf.reduce_mean(rmse)
+    if mape.ndim > 0:
+        mape = tf.reduce_mean(mape)
+    if mase.ndim > 0:
+        mase = tf.reduce_mean(mase)
+    if huber.ndim > 0:
+        huber = tf.reduce_mean(huber)
+
     return RegressionPredictionMetrics(
-        mae=tf.keras.metrics.mean_absolute_error(y_true, y_pred).numpy(),
-        mse=mse,
-        rmse=np.sqrt(mse),
-        mape=tf.keras.metrics.mean_absolute_percentage_error(y_true, y_pred).numpy(),
-        mase=mase,
-        huber=huber,
+        mae=mae.numpy(),
+        mse=mse.numpy(),
+        rmse=rmse.numpy(),
+        mape=mape.numpy(),
+        mase=mase.numpy(),
+        huber=huber.numpy(),
         name=name)
 
 
