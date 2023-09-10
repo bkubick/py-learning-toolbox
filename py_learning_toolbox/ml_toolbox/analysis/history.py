@@ -36,6 +36,7 @@ def export_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.Da
             experiment_name (str): The experiment name.
             filepath (Optional[str]): The filepath to save the history to.
             file_format (Optional[str]): The file format to save the history to.
+                Must be one of the following: ['json', 'csv'].
             include_timestamp (bool): Whether to include the timestamp in the filepath.
     """
     file_format = file_format or 'csv'
