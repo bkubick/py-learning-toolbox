@@ -4,6 +4,7 @@
 """
 
 from . import image
+from . import timeseries
 
 
-__all__ = ['image']
+__all__ = ['image', 'timeseries']

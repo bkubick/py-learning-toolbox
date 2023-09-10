@@ -10,6 +10,7 @@ from . import image
 from . import language
 from . import model
 from . import regression
+from . import timeseries
 
 
-__all__ = ['classification', 'history', 'image', 'language', 'model', 'regression']
+__all__ = ['classification', 'history', 'image', 'language', 'model', 'regression', 'timeseries']
