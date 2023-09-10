@@ -49,21 +49,27 @@ class Performance:
             yield key, value
 
 
-def time_predictions(model: ImplementsPredict,
+def time_predictions(models: typing.Union[typing.List[ImplementsPredict], ImplementsPredict],
                      data_to_predict: Dataset,
                      name: typing.Optional[str] = None) -> Performance:
     """ Timer for how long a model takes to make predictions on Performance.
 
         Args:
-            model (tf.keras.Model): The model to run performance metrics on.
+            models (tf.keras.Model): The model(s) to run performance metrics on.
             data_to_predict (Dataset): The data to make predictions on.
             name (Optional[str]): The name of the corresponding experiment.
 
         Returns:
             (Performance) The model performance.        
     """
+    if not isinstance(models, list):
+        models = [models]
+
     start_time = time.perf_counter()
-    _ = model.predict(data_to_predict)
+
+    for model in models:
+        _ = model.predict(data_to_predict)
+
     end_time = time.perf_counter()
 
     total_time = end_time - start_time
