@@ -11,6 +11,7 @@ from . import language
 from . import model
 from . import regression
 from . import timeseries
+from . import uncertainty
 
 
-__all__ = ['classification', 'history', 'image', 'language', 'model', 'regression', 'timeseries']
+__all__ = ['classification', 'history', 'image', 'language', 'model', 'regression', 'timeseries', 'uncertainty']
