@@ -74,7 +74,9 @@ def time_predictions(models: typing.Union[typing.List[ImplementsPredict], Implem
 
     total_time = end_time - start_time
 
-    return Performance(total_time=total_time, total_predictions=len(data_to_predict), name=name)
+    return Performance(total_time=total_time,
+                       total_predictions=len(data_to_predict) * len(models),
+                       name=name)
 
 
 def generate_performance_dataframe(performance_metrics: typing.List[Performance]) -> pd.DataFrame:
