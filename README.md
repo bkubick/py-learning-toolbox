@@ -3,6 +3,8 @@
 ## Description
 All-in-One intelligence toolbox yielding my personal tools I commonly use in AI, Machine Learning, Deep Learning, and Genetic Algorithm projects.
 
+**IMPORTANT NOTE** This repository is under active development, and any versioning will be inconsistent until the repository becomes more stable. Once it becomes more stable, I will begin tracking the versioning.
+
 ## Installing
 This package is not setup to install directly from pypi. To install this package to an environment, run the following command.
 
