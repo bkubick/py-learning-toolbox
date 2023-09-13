@@ -29,3 +29,11 @@ For instance, if you want to look at tweets to determine if it is talking about 
 ```
 pltb_setup_project projects/disaster_tweets
 ```
+
+## Additional Work
+This repository is under active development that I want to dig into deeper as I continue to grow in the field of deep learning. See below for the additional work I plan to work on.
+
+1. Cleanup typehinting for the dataframe, arraylike, etc.
+2. Review my `deep-learning-development` repository, and add over any utilities I think would be beneficial to live here.
+3. Read through various machine learning papers to determine ideal metrics, plots to include, etc.
+4. Make this compatible with both TensorFlow and PyTorch.
