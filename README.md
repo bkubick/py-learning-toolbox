@@ -6,6 +6,7 @@ All-in-One intelligence toolbox yielding my personal tools I commonly use in AI,
 **IMPORTANT NOTE** This repository is under active development, and any versioning will be inconsistent until the repository becomes more stable. Once it becomes more stable, I will begin tracking the versioning.
 
 ## Tech Stack
+<img style="padding-right:20px;" align=left alt="TensorFlow" src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54"/>
 <img style="padding-right:20px;" alt="TensorFlow" align=left src="https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=whitee"/>
 <img style="padding-right:20px;" alt="Matplotlib" align=left src="https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)"/>
 <img style="padding-right:20px;" alt="Numpy" align=left src="https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white"/>
