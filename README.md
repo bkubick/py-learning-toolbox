@@ -5,6 +5,12 @@ All-in-One intelligence toolbox yielding my personal tools I commonly use in AI,
 
 **IMPORTANT NOTE** This repository is under active development, and any versioning will be inconsistent until the repository becomes more stable. Once it becomes more stable, I will begin tracking the versioning.
 
+## Tech Stack
+<img style="padding-right:20px;" alt="TensorFlow" src="https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=whitee"/>
+<img style="padding-right:20px;" alt="Matplotlib" src="https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)"/>
+<img style="padding-right:20px;" alt="Numpy" src="https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white"/>
+<img style="padding-right:20px;" alt="Pandas" src="https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white"/>
+
 ## Installing
 This package is not setup to install directly from pypi. To install this package to an environment, run the following command.
 
