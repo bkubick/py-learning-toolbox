@@ -25,6 +25,7 @@ __all__ = [
     'get_filepaths_from_dataset',
     'get_top_n_mislabeled_images',
     'load_and_resize_image',
+    'predict_and_plot_image',
     'plot_image_by_index',
     'plot_images_by_indices',
     'plot_random_image_from_directory',
@@ -144,6 +145,30 @@ def plot_image_by_index(index: int,
 
     plt.imshow(images[index], cmap=cmap)
     plt.title(class_names[labels[index]])
+
+
+def predict_and_plot_image(model: tf.keras.models.Model, image: tf.Tensor, class_names: ArrayLike):
+    """ Predicts and plots the preprocessed image.
+    
+        Args:
+            model (tf.keras.models.Model): The model to use for prediction.
+            image (tf.Tensor): The prepped image to predict.
+            class_names (ArrayLike): The names of the classes.
+    """
+    prediction = model.predict(tf.expand_dims(image, axis=0))
+
+    # Binary vs multiclass check
+    if len(prediction[0]) > 1:
+        class_name = class_names[tf.argmax(prediction[0])]
+    else:
+        class_name_index = int(tf.round(prediction))
+        class_name = class_names[class_name_index]
+    
+    # Plotting the image
+    plt.figure()
+    plt.imshow(image)
+    plt.title(f'Image: {class_name.capitalize()} ({str(prediction[0][0]*100)[:4]}% Confident)')
+    plt.axis(False)
 
 
 def plot_images_by_indices(indexes: typing.List[int],
