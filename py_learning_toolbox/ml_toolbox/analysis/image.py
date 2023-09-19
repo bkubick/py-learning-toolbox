@@ -8,6 +8,7 @@ import os
 import random
 import typing
 
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,6 +27,7 @@ __all__ = [
     'load_and_resize_image',
     'plot_image_by_index',
     'plot_images_by_indices',
+    'plot_random_image_from_directory',
     'plot_random_image_label_and_prediction',
     'summarize_directory',
 ]
@@ -208,3 +210,30 @@ def plot_random_image_label_and_prediction(images: ArrayLike,
 
     x_label_color = 'green' if pred_label == true_label else 'red'
     plt.xlabel(f'Pred: {pred_label}  True: {true_label}', color=x_label_color)
+
+
+def plot_random_image_from_directory(directory: pathlib.Path, target_class: str) -> np.ndarray:
+    """ Plots a random image from the given data directory and target class.
+
+        Example:
+            plot_random_image_from_directory('data/animals', 'cats')
+    
+        Args:
+            directory (pathlib.Path): The directory containing the data.
+            target_class (str): The target class.
+        
+        Returns:
+            (np.ndarray) The image array.
+    """
+    target_folder = f'{directory}/{target_class}'
+
+    random_image = random.sample(os.listdir(target_folder), 1)
+    img = mpimg.imread(target_folder + '/' + random_image[0])
+
+    plt.imshow(img)
+    plt.title(target_class)
+    plt.axis('off')
+    
+    logger.info(f'{target_class.capitalize()} - Image Shape: {img.shape}')
+
+    return img
