@@ -3,7 +3,7 @@
     structuring data into datasets.
 """
 
-from .datasets import generate_dataset_from_data
+from .datasets import generate_dataset_from_data, split_data_labels_from_dataset
 from .reading import read_txt_file_from_directory, read_txt_file_from_url
 
 
@@ -11,4 +11,5 @@ __all__ = [
     'generate_dataset_from_data',
     'read_txt_file_from_directory',
     'read_txt_file_from_url',
+    'split_data_labels_from_dataset',
 ]
