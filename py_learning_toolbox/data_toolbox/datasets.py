@@ -38,3 +38,23 @@ def generate_dataset_from_data(datas: typing.List[ArrayLike],
         concatenated_dataset = concatenated_dataset.prefetch(tf.data.AUTOTUNE)
 
     return concatenated_dataset
+
+
+def split_data_labels_from_dataset(dataset: tf.data.Dataset) -> typing.Tuple[tf.Tensor, tf.Tensor]:
+    """ Splits the data and labels from the dataset.
+
+        NOTE: This defeats the purpose of using a dataset, but is useful for debugging or extracting
+        the data and labels for other purposes.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset to split.
+        
+        Returns:
+            (typing.Tuple) The data and labels.
+    """
+    data, labels = [], []
+    for X, y in dataset:
+        data.extend(X)
+        labels.extend(y)
+
+    return (tf.convert_to_tensor(data), tf.convert_to_tensor(labels))
