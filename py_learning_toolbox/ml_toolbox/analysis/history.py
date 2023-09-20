@@ -14,7 +14,25 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['export_history', 'import_history', 'plot_history', 'plot_histories', 'plot_learning_rate_versus_loss']
+__all__ = [
+    'export_history',
+    'import_history',
+    'plot_history',
+    'plot_learning_rate_versus_loss',
+    'plot_sequential_histories',
+]
+
+
+_CHECKPOINT_COLORS = [
+    '#C5DFFF',
+    '#98C7FF',
+    '#5CA7FF',
+    '#2187FF',
+    '#0061D2',
+    '#004392',
+    '#002B5C',
+    '#000000',
+]
 
 
 def export_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.DataFrame],
@@ -122,53 +140,56 @@ def plot_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.Data
         plt.show()
 
 
-def plot_histories(original_history: typing.Union[pd.DataFrame, tf.keras.callbacks.History],
-                   new_history: typing.Union[pd.DataFrame, tf.keras.callbacks.History],
-                   initial_epoch: int,
-                   metric: typing.Optional[str] = None) -> None:
-    """ Compares the history of two models where the second model's starting epoch is the first model's
+def plot_sequential_histories(histories: typing.List[typing.Union[pd.DataFrame, tf.keras.callbacks.History]],
+                              metric: typing.Optional[str] = None,
+                              figsize: typing.Tuple[int, int] = (8, 8)) -> None:
+    """ Plots histories of a model with multiple training sessions where the starting epoch is the previous history's
         ending epoch. This is useful for comparing the history of a model before and after fine-tuning.
         
-        This plots 'loss' and 'val_loss' versus the epochs for both models, and the metric and validation metric
-        versus the epochs for both models.
+        This plots 'loss' and 'val_loss' versus the epochs for the model histories, and the metric and
+        validation metric versus the epochs for all histories.
     
         Args:
-            original_history (Union[pd.DataFrame, tf.keras.callbacks.History]): The history of the original model.
-            new_history (Union[pd.DataFrame, tf.keras.callbacks.History]): The history of the new model.
-            initial_epoch (int): The epoch at which the new model started training at.
-            metric (Optional[str]): The metric to plot (defaults to 'accuracy').
+            histories (List[Union[pd.DataFrame, tf.keras.callbacks.History]]): The histories from the
+                training sessions performed on the same model.
+                NOTE: This is typically useful when halting training and fine-tuning a model with additional
+                epochs after adjusting the learning rate or freezing certain parameters.
+            metric (Optional[str]): The metric to plot (defaults to 'loss').
+            figsize (Tuple[int, int]): The size of the figure.
     """
-    if isinstance(original_history, pd.DataFrame) and isinstance(new_history, pd.DataFrame):
-        original_history_df = original_history
-        new_history_df = new_history
-    else:
-        original_history_df = pd.DataFrame(original_history.history)
-        new_history_df = pd.DataFrame(new_history.history)
+    metric_to_plot = metric or 'loss'
 
-    metric_to_plot = metric or 'accuracy'
+    all_history_dfs = []
+    for history in histories:
+        if isinstance(history, pd.DataFrame):
+            history_df = history
+        else:
+            history_df = pd.DataFrame(history.history)
+        all_history_dfs.append(history_df)
+    all_history_df = pd.concat(all_history_dfs)
 
-    total_acc = pd.concat([original_history_df[metric_to_plot], new_history_df[metric_to_plot]])
-    total_loss = pd.concat([original_history_df['loss'], new_history_df['loss']])
-    total_val_acc = pd.concat([original_history_df[f'val_{metric_to_plot}'], new_history_df[f'val_{metric_to_plot}']])
-    total_val_loss = pd.concat([original_history_df['val_loss'], new_history_df['val_loss']])
+    total_metric = all_history_df[metric_to_plot].to_numpy()
+    total_val_metric = None
+    if f'val_{metric_to_plot}' in all_history_df:
+        total_val_metric = all_history_df[f'val_{metric_to_plot}'].to_numpy()
+
+    plt.figure(figsize=figsize)
+    plt.title(f'{metric_to_plot.capitalize()} Checkpoint History')
+    plt.xlabel('Epochs')
+    plt.ylabel(metric_to_plot.capitalize())
     
-    # Loss Plots
-    plt.figure(figsize=(8,8))
-    plt.subplot(2, 1, 1)
-    plt.plot(total_loss, label='Training Loss')
-    plt.plot(total_val_loss, label='Validation Loss')
-    plt.plot([initial_epoch-1, initial_epoch-1], plt.ylim(), label='Start Fine Tuning')
-    plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
+    plt.plot(total_metric, label=f'Training {metric_to_plot.capitalize()}')
+    if total_val_metric is not None:
+        plt.plot(total_val_metric, label=f'Validation {metric_to_plot.capitalize()}')
 
-    # Accuracy Plots
-    plt.figure(figsize=(8,8))
-    plt.subplot(2, 1, 1)
-    plt.plot(total_acc, label=f'Training {metric_to_plot.capitalize()}')
-    plt.plot(total_val_acc, label=f'Validation {metric_to_plot.capitalize()}')
-    plt.plot([initial_epoch-1, initial_epoch-1], plt.ylim(), label='Start Fine Tuning')
+    checkpoint_epoch = 0
+    for index, history in enumerate(all_history_dfs):
+        if index > 0:
+            plt.axvline(checkpoint_epoch - 1, c=_CHECKPOINT_COLORS[index - 1 % len(_CHECKPOINT_COLORS)], label=f'Checkpoint {index}')
+
+        checkpoint_epoch += len(history)
+
     plt.legend(loc='lower right')
-    plt.title(f'Training and Validation {metric_to_plot.capitalize()}')
 
 
 def plot_learning_rate_versus_loss(learning_rates: typing.List[float],
