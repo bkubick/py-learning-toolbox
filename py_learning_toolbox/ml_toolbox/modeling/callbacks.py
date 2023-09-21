@@ -20,15 +20,18 @@ def generate_tensorboard_callback(model_name: str,
                                   include_timestamp: bool = True) -> tf.keras.callbacks.TensorBoard:
     """ Creates a TensorBoard callback.
 
+        - Stores file at {filepath}/{model_name}/tensorboard/{timestamp}
+
         Args:
             model_name (str): The experiment name.
             filepath (Optional[str]): The directory name.
+                Defaults to 'logs'
             include_timestamp (bool): Whether to include the timestamp in the filename.
 
         Returns:
             (tf.keras.callbacks.TensorBoard) The TensorBoard callback.
     """
-    log_dir = f'{filepath or "logs"}/{model_name}'
+    log_dir = f'{filepath or "logs"}/{model_name}/tensorboard'
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
@@ -46,9 +49,12 @@ def generate_checkpoint_callback(model_name: str,
                                  include_timestamp: bool = True) -> tf.keras.callbacks.ModelCheckpoint:
     """ Generates a checkpoint callback.
 
+        - Stores file at {filepath}/{model_name}/checkpoint/{timestamp}/checkpoint.ckpt
+
         Args:
             model_name (str): The experiment name.
             filepath (Optional[str]): The directory name.
+                Defaults to 'checkpoints'
             monitor (Optional[str]): The metric to monitor.
             best_only (bool): Whether to save only the best model.
             include_timestamp (bool): Whether to include the timestamp in the filename.
@@ -78,15 +84,18 @@ def generate_csv_logger_callback(model_name: str,
                                  include_timestamp: bool = True) -> tf.keras.callbacks.CSVLogger:
     """ Generates a CSV logger callback.
 
+        - Stores file at {filepath}/{model_name}/csv/{timestamp}/epoch_results.csv
+
         Args:
             model_name (str): The model name.
             filepath (Optional[str]): The parent directory for the model_name dir with the csv files.
+                Defaults to 'logs'
             include_timestamp (bool): Whether to include the timestamp in the filename.
 
         Returns:
             (tf.keras.callbacks.CSVLogger) The CSV logger callback.
     """
-    log_dir = f'{filepath or "logs"}/{model_name}'
+    log_dir = f'{filepath or "logs"}/{model_name}/csv'
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
