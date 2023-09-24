@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+import os
 from typing import Optional
 
 import tensorflow as tf
@@ -35,6 +36,9 @@ def generate_tensorboard_callback(model_name: str,
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
 
     logger.info(f'TensorBoard callback for {log_dir}')
@@ -65,6 +69,9 @@ def generate_checkpoint_callback(model_name: str,
     log_dir = f'{filepath or "checkpoints"}/{model_name}'
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
+
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         filepath=f'{log_dir}/checkpoint.ckpt',
@@ -98,6 +105,9 @@ def generate_csv_logger_callback(model_name: str,
     log_dir = f'{filepath or "logs"}/{model_name}/csv'
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
+
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
     csv_logger = tf.keras.callbacks.CSVLogger(f'{log_dir}/epoch_results.csv')
 
