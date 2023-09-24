@@ -49,7 +49,7 @@ def generate_checkpoint_callback(model_name: str,
                                  include_timestamp: bool = True) -> tf.keras.callbacks.ModelCheckpoint:
     """ Generates a checkpoint callback.
 
-        - Stores file at {filepath}/{model_name}/checkpoint/{timestamp}/checkpoint.ckpt
+        - Stores file at {filepath}/{model_name}/{timestamp}/checkpoint.ckpt
 
         Args:
             model_name (str): The experiment name.
