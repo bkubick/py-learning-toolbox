@@ -40,21 +40,36 @@ def generate_dataset_from_data(datas: typing.List[ArrayLike],
     return concatenated_dataset
 
 
-def split_data_labels_from_dataset(dataset: tf.data.Dataset) -> typing.Tuple[tf.Tensor, tf.Tensor]:
+def split_data_labels_from_dataset(dataset: tf.data.Dataset,
+                                   labels_only: bool = False) -> typing.Union[typing.Tuple[tf.Tensor, tf.Tensor], tf.Tensor]:
     """ Splits the data and labels from the dataset.
 
         NOTE: This defeats the purpose of using a dataset, but is useful for debugging or extracting
         the data and labels for other purposes.
 
+        WARNING: This will load the entire dataset into memory. If the dataset is too large, this
+        will cause an OOM error.
+
+        NOTE: Be caucious of using this function when the dataset is shuffled. The data and labels
+        will not be in the same order as the original dataset. Additionally, depending on how the
+        dataset is loaded, the data and labels may shuffle everytime the dataset is called, resulting
+        in a different order each time.
+
         Args:
             dataset (tf.data.Dataset): The dataset to split.
-        
+            labels_only (bool): Whether to return only the labels. Defaults to False.
+                This is useful for when you only need the labels for something like the
+                embedding projector, or when the data is too large to load into memory
+                when you only need the labels.
+
         Returns:
-            (typing.Tuple) The data and labels.
+            (Union[Tuple[Tensor, Tensor], Tensor]) The data and labels.
     """
     data, labels = [], []
     for X, y in dataset:
-        data.extend(X)
+        if labels_only is False:
+            data.append(X)
         labels.extend(y)
 
-    return (tf.convert_to_tensor(data), tf.convert_to_tensor(labels))
+    labels_tensor = tf.convert_to_tensor(labels)
+    return (tf.convert_to_tensor(data), labels_tensor) if labels_only is False else labels_tensor
