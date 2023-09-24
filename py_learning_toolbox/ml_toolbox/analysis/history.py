@@ -7,6 +7,7 @@ import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 import tensorflow as tf
 
@@ -42,8 +43,8 @@ def export_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.Da
                    include_timestamp: bool = True) -> None:
     """ Exports the history to a file of either .json or .csv under the experiment directory.
 
-        Note: If the filepath is not specified, the history will be saved to the 'logs' directory.
-    
+        - Stores file at {filepath}/{experiment_name}/history/{timestamp}/history.{csv|json}
+
         Raises:
             TypeError: If the type of history is not supported.
             ValueError: If the file format is not supported.
@@ -53,17 +54,21 @@ def export_history(history: typing.Union[tf.keras.callbacks.History, dict, pd.Da
                 by the fit method.
             experiment_name (str): The experiment name.
             filepath (Optional[str]): The filepath to save the history to.
+                Defaults to 'logs'
             file_format (Optional[str]): The file format to save the history to.
-                Must be one of the following: ['json', 'csv'].
+                Must be one of the following: ['json', 'csv'], defaults to 'csv'.
             include_timestamp (bool): Whether to include the timestamp in the filepath.
     """
     file_format = file_format or 'csv'
     if file_format not in {'json', 'csv'}:
         raise ValueError(f'Invalid file format: {file_format}')
 
-    log_dir = f'{filepath or "logs"}/{experiment_name}'
+    log_dir = f'{filepath or "logs"}/{experiment_name}/history'
     if include_timestamp:
         log_dir = f'{log_dir}/{dt.datetime.now().strftime("%Y%m%d-%H%M%S")}'
+
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
     if isinstance(history, tf.keras.callbacks.History):
         history_df = pd.DataFrame(history.history)
