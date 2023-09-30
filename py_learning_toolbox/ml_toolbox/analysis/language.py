@@ -11,7 +11,10 @@ import matplotlib.pyplot as plt
 
 
 if typing.TYPE_CHECKING:
+    import numpy as np
     import tensorflow as tf
+
+    ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
 __all__ = ['export_embedding_projector_data']
@@ -66,21 +69,23 @@ def export_embedding_projector_data(model_name: str,
     out_m.close()
 
 
-def get_words_by_count(sentences: typing.List[str]) -> typing.Dict[str, int]:
+def get_words_by_count(sentences: ArrayLike) -> typing.Dict[str, int]:
     """ Gets the words by count in all the sentences.
             
         Args:
-            sentences (List[str]): The sentences to get the words by count from.
+            sentences (ArrayLike[str]): The sentences to get the words by count from.
 
         Returns:
             (Dict[str, int]) The words by count.
     """
     words_by_count = {}
     for sentence in sentences:
-        if len(sentence) == 1:
+        np_sentence = tf.strings.as_string(sentence).numpy()
+        if len(np_sentence) < 1:
             continue
 
-        for word in sentence.split(' '):
+        unencoded_sentence = str(np_sentence, encoding='utf-8')
+        for word in unencoded_sentence.split(' '):
             words_by_count[word] = words_by_count.get(word, 0) + 1
 
     return words_by_count
