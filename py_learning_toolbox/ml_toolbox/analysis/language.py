@@ -9,11 +9,11 @@ import os
 import typing
 
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 
 if typing.TYPE_CHECKING:
     import numpy as np
-    import tensorflow as tf
 
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
