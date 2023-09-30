@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 import datetime as dt
 import io
 import os
@@ -17,7 +18,7 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['export_embedding_projector_data']
+__all__ = ['export_embedding_projector_data', 'get_word_counts', 'plot_words_counts']
 
 
 def export_embedding_projector_data(model_name: str,
@@ -69,8 +70,13 @@ def export_embedding_projector_data(model_name: str,
     out_m.close()
 
 
-def get_words_by_count(sentences: ArrayLike) -> typing.Dict[str, int]:
+def get_word_counts(sentences: ArrayLike) -> typing.Dict[str, int]:
     """ Gets the words by count in all the sentences.
+
+        NOTE: This does not clean the sentences (capitalization and punctuation will result in
+        different counts for the same word). If you want to clean the sentences,
+        such that only words are included, you can use the `clean_text` function
+        from `py_learning_toolbox/ml_toolbox/preprocessing/language.py`.
             
         Args:
             sentences (ArrayLike[str]): The sentences to get the words by count from.
@@ -78,35 +84,28 @@ def get_words_by_count(sentences: ArrayLike) -> typing.Dict[str, int]:
         Returns:
             (Dict[str, int]) The words by count.
     """
-    words_by_count = {}
-    for sentence in sentences:
-        np_sentence = tf.strings.as_string(sentence).numpy()
-        if len(np_sentence) < 1:
-            continue
+    np_sentences = tf.strings.as_string(sentences).numpy()
+    all_sentences = str(b' '.join(np_sentences), encoding='utf-8')
 
-        unencoded_sentence = str(np_sentence, encoding='utf-8')
-        for word in unencoded_sentence.split(' '):
-            words_by_count[word] = words_by_count.get(word, 0) + 1
-
-    return words_by_count
+    return dict(Counter(all_sentences.split()))
 
 
-def plot_words_by_count(words_by_count: typing.Dict[str, int],
-                        n: int = 20,
-                        most_common: bool = True,
-                        figsize: typing.Tuple[int, int] = (8, 5),
-                        tick_fontsize: int = 8) -> None:
+def plot_words_counts(word_counts: typing.Dict[str, int],
+                      n: int = 20,
+                      most_common: bool = True,
+                      figsize: typing.Tuple[int, int] = (8, 5),
+                      tick_fontsize: int = 8) -> None:
     """ Plots the n most or least common words based on the counts.
 
         Args:
-            words_by_count (Dict[str, int]): the word count by each word (i.e. [{'obi-wan': 4}... ]).
-                NOTE: a complimentary function to generate this is `get_words_by_count`.
+            word_counts (Dict[str, int]): the word count by each word (i.e. [{'obi-wan': 4}... ]).
+                NOTE: a complimentary function to generate this is `get_word_counts`.
             n (int): the number of words to include in plot.
             most_common (bool): whether to plot the most or least common words.
             tick_fontsize (int): the fontsize for the x and y ticks.
     """
-    sorted_words = sorted(words_by_count, key=lambda x: words_by_count[x])
-    counts = [words_by_count[word] for word in sorted_words]
+    sorted_words = sorted(word_counts, key=lambda x: word_counts[x])
+    counts = [word_counts[word] for word in sorted_words]
 
     n_words = sorted_words[-n:] if most_common else sorted_words[:n]
     n_counts = counts[-n:] if most_common else counts[:n]
