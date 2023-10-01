@@ -8,4 +8,4 @@ from . import language
 from . import timeseries
 
 
-__all__ = ['image', 'language', 'timeseries']
+__all__ = ['image', 'language', 'sequence', 'timeseries']
