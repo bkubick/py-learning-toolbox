@@ -6,14 +6,15 @@ import re
 import string
 import typing
 
-import tensorflow as tf
-
 
 __all__ = [
     'clean_text',
     'create_sequences_from_sentences',
     'create_sequenced_data_labels_from_sentences',
 ]
+
+if typing.TYPE_CHECKING:
+    DataLabelTuple = typing.Tuple[typing.List[str], typing.List[str]]
 
 
 def clean_text(text: str,
@@ -50,7 +51,7 @@ def clean_text(text: str,
     return text
 
 
-def create_sequences_from_sentences(sentences: typing.List[str]) -> tf.Tensor:
+def create_sequences_from_sentences(sentences: typing.List[str]) -> typing.List[str]:
     """ Creates sequences of sentences from the given sentences.
 
         Example:
@@ -61,7 +62,7 @@ def create_sequences_from_sentences(sentences: typing.List[str]) -> tf.Tensor:
             sentences (List[str]): The sentences to create sequences from.
 
         Returns:
-            (tf.Tensor) The sequences of sentences.
+            (typing.List[str]) The sequences of sentences.
     """
     sequences = []
     for sentence in sentences:
@@ -69,10 +70,10 @@ def create_sequences_from_sentences(sentences: typing.List[str]) -> tf.Tensor:
         for i in range(2, len(words_in_sentence) + 1):
             sequences.append(' '.join(words_in_sentence[:i]))
 
-    return tf.convert_to_tensor(sequences, dtype=tf.string)
+    return sequences
 
 
-def create_sequenced_data_labels_from_sentences(sentences: typing.List[str]) -> typing.Tuple[tf.Tensor, tf.Tensor]:
+def create_sequenced_data_labels_from_sentences(sentences: typing.List[str]) -> DataLabelTuple:
     """ Generates sequenced data from the given sentences and returns the data and labels.
 
         Example:
@@ -84,7 +85,7 @@ def create_sequenced_data_labels_from_sentences(sentences: typing.List[str]) -> 
             sentences (List[str]): The sentences to create sequences from.
 
         Returns:
-            (Tuple[tf.Tensor, tf.Tensor]) The sequenced data.
+            (Tuple[typing.List[str], typing.List[str]]) The sequenced data and labels.
     """
     data, labels = [], []
     for sentence in sentences:
@@ -93,4 +94,4 @@ def create_sequenced_data_labels_from_sentences(sentences: typing.List[str]) -> 
             data.append(' '.join(words_in_sentence[:i]))
             labels.append(words_in_sentence[i])
 
-    return tf.convert_to_tensor(data, dtype=tf.string), tf.convert_to_tensor(labels, dtype=tf.string)
+    return data, labels
