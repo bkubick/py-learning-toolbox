@@ -18,7 +18,12 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['export_embedding_projector_data', 'get_word_counts', 'plot_token_counts']
+__all__ = [
+    'export_embedding_projector_data',
+    'get_character_counts',
+    'get_word_counts',
+    'plot_token_counts',
+]
 
 
 def export_embedding_projector_data(model_name: str,
@@ -88,6 +93,26 @@ def get_word_counts(sentences: ArrayLike) -> typing.Dict[str, int]:
     all_sentences = str(b' '.join(np_sentences), encoding='utf-8')
 
     return dict(Counter(all_sentences.split()))
+
+
+def get_character_counts(sentences: ArrayLike) -> typing.Dict[str, int]:
+    """ Gets the characters by count in all the sentences.
+
+        NOTE: This does not clean the sentences (capitalization and punctuation will result in
+        different counts for the same character). If you want to clean the sentences,
+        such that only characters are included, you can use the `clean_text` function
+        from `py_learning_toolbox/ml_toolbox/preprocessing/language.py`.
+            
+        Args:
+            sentences (ArrayLike[str]): The sentences to get the characters by count from.
+
+        Returns:
+            (Dict[str, int]) The characters by count.
+    """
+    np_sentences = tf.strings.as_string(sentences).numpy()
+    all_sentences = str(b' '.join(np_sentences), encoding='utf-8')
+
+    return dict(Counter(all_sentences))
 
 
 def plot_token_counts(token_counts: typing.Dict[str, int],
