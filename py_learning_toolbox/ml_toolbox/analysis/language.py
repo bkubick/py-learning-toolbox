@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
-__all__ = ['export_embedding_projector_data', 'get_word_counts', 'plot_words_counts']
+__all__ = ['export_embedding_projector_data', 'get_word_counts', 'plot_token_counts']
 
 
 def export_embedding_projector_data(model_name: str,
@@ -90,32 +90,32 @@ def get_word_counts(sentences: ArrayLike) -> typing.Dict[str, int]:
     return dict(Counter(all_sentences.split()))
 
 
-def plot_words_counts(word_counts: typing.Dict[str, int],
-                      n: int = 20,
-                      most_common: bool = True,
-                      figsize: typing.Tuple[int, int] = (8, 5),
-                      tick_fontsize: int = 8) -> None:
-    """ Plots the n most or least common words based on the counts.
+def plot_token_counts(token_counts: typing.Dict[str, int],
+                     n: int = 20,
+                     most_common: bool = True,
+                     figsize: typing.Tuple[int, int] = (8, 5),
+                     tick_fontsize: int = 8) -> None:
+    """ Plots the n most or least common tokens (characters, words, etc.) based on the counts.
 
         Args:
-            word_counts (Dict[str, int]): the word count by each word (i.e. [{'obi-wan': 4}... ]).
+            token_counts (Dict[str, int]): the token count by each word (i.e. [{'obi-wan': 4}... ]).
                 NOTE: a complimentary function to generate this is `get_word_counts`.
-            n (int): the number of words to include in plot.
-            most_common (bool): whether to plot the most or least common words.
+            n (int): the number of tokens to include in plot.
+            most_common (bool): whether to plot the most or least common tokens.
             tick_fontsize (int): the fontsize for the x and y ticks.
     """
-    sorted_words = sorted(word_counts, key=lambda x: word_counts[x])
-    counts = [word_counts[word] for word in sorted_words]
+    sorted_tokens = sorted(token_counts, key=lambda x: token_counts[x])
+    counts = [token_counts[token] for token in sorted_tokens]
 
-    n_words = sorted_words[-n:] if most_common else sorted_words[:n]
+    n_tokens = sorted_tokens[-n:] if most_common else sorted_tokens[:n]
     n_counts = counts[-n:] if most_common else counts[:n]
 
-    title = f'Top {n} {"Most" if most_common else "Least"} Commonly Used Words'
+    title = f'Top {n} {"Most" if most_common else "Least"} Commonly Used Tokens'
 
     plt.figure(figsize=figsize)
-    plt.bar(n_words, n_counts)
+    plt.bar(n_tokens, n_counts)
     plt.xticks(rotation=45, fontsize=tick_fontsize)
     plt.yticks(rotation=0, fontsize=tick_fontsize)
-    plt.xlabel('Most Common Words:', fontsize=12)
-    plt.ylabel('Number of Occurences:', fontsize=12)
+    plt.xlabel('Most Common Tokens', fontsize=12)
+    plt.ylabel('Number of Occurences', fontsize=12)
     plt.title(title, fontsize=12)
