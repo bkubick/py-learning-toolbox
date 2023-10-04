@@ -17,6 +17,7 @@ if typing.TYPE_CHECKING:
 __all__ = [
     'generate_prediction_metrics',
     'generate_prediction_metrics_dataframe',
+    'generate_prediction_metrics_from_dataset_and_model',
     'plot_predictions',
     'plot_true_versus_predicted',
     'RegressionPredictionMetrics',
@@ -49,6 +50,50 @@ class RegressionPredictionMetrics:
         """ Iterates over the dataclass."""
         for key, value in self.__dict__.items():
             yield key, value
+
+
+def generate_prediction_metrics_from_dataset_and_model(
+        dataset: tf.data.Dataset,
+        model: tf.keras.models.Model) -> RegressionPredictionMetrics:
+    """ Evaluates the model predictions using the metrics listed below.
+
+        NOTE: This function aggregates the metrics for multi-dimensional values using the mean.
+
+        WARNING: This stores the y_true and y_pred in memory. If the dataset is too large,
+        this will cause an OOM error.
+
+        WARNING: This is a slower method of generating the prediction metrics due to it
+        having to iterate over the entire dataset in batches and predict on batches one
+        at a time.
+
+        NOTE: The purpose of this function is to account for shuffling of the dataset when
+        the dataset is batched.
+
+        - mean absolute error (MAE)
+        - mean squared error (MSE)
+        - root mean squared error (RMSE)
+        - mean absolute percentage error (MAPE)
+        - mean absolute scaled error (MASE)
+        - huber loss
+
+        Args:
+            dataset (tf.data.Dataset): The dataset.
+            model (tf.keras.models.Model): The model.
+
+        Returns:
+            RegressionPredictionMetrics: The regression prediction metrics.
+    """
+    y_true = []
+    y_pred = []
+
+    for X, y in dataset:
+        y_true.append(y)
+        y_pred.append(model.predict(X))
+
+    y_true = tf.concat(y_true, axis=0)
+    y_pred = tf.concat(y_pred, axis=0)
+
+    return generate_prediction_metrics(y_true, y_pred, model.name)
 
 
 def generate_prediction_metrics(y_true: ArrayLike,
