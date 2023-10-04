@@ -20,6 +20,7 @@ __all__ = [
     'get_future_dates',
     'get_labeled_windows',
     'make_future_forecasts',
+    'make_windowed_dataset',
     'make_windows',
 ]
 
@@ -61,6 +62,38 @@ def make_windows(data: tf.Tensor, window_size: int = 7, horizon: int = 1) -> typ
 
     # Get labeled windows
     return get_labeled_windows(windowed_array, horizon=horizon)
+
+
+def make_windowed_dataset(series: ArrayLike,
+                          window_size: int = 7,
+                          horizon_size: int = 1,
+                          batch_size: int = 32,
+                          shuffle_buffer: int = 1000) -> tf.data.Dataset:
+    """ Creates a windowed dataset from the given series.
+
+        Example:
+            Input: [0, 1, 2, 3, 4, 5, 6, 7]
+            Output: [0, 1, 2, 3, 4, 5, 6], [7],
+                    [1, 2, 3, 4, 5, 6, 7], [8],
+                    ...
+
+        Args:
+            series (ArrayLike): the series to create the windowed dataset from.
+            window_size (int): the size of the window.
+            horizon_size (int): the size of the horizon.
+            batch_size (int): the size of the batch.
+            shuffle_buffer (int): the size of the shuffle buffer.
+        
+        Returns:
+            (tf.data.Dataset) the windowed dataset.
+    """
+    dataset = tf.data.Dataset.from_tensor_slices(series)
+    dataset = dataset.window(window_size + horizon_size, shift=1, drop_remainder=True)
+    dataset = dataset.flat_map(lambda window: window.batch(window_size + horizon_size))
+    dataset = dataset.shuffle(shuffle_buffer).map(lambda window: (window[:-horizon_size], window[-horizon_size:]))
+    dataset = dataset.batch(batch_size).prefetch(1)
+
+    return dataset
 
 
 def make_future_forecasts(values: tf.data.Dataset,
