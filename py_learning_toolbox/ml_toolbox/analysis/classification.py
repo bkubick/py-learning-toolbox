@@ -22,6 +22,7 @@ __all__ = [
     'ClassificationPredictionMetrics',
     'generate_prediction_metrics',
     'generate_prediction_metrics_dataframe',
+    'generate_prediction_metrics_from_dataset_and_model',
     'plot_confusion_matrix',
     'plot_classification_report',
 ]
@@ -48,6 +49,46 @@ class ClassificationPredictionMetrics:
         """ Iterates over the dataclass."""
         for key, value in self.__dict__.items():
             yield key, value
+
+
+def generate_prediction_metrics_from_dataset_and_model(
+        dataset: tf.data.Dataset,
+        model: tf.keras.models.Model) -> ClassificationPredictionMetrics:
+    """ Evaluates the model predictions using the following metrics:
+
+        - Accuracy
+        - Precision
+        - Recall
+        - F1
+
+        WARNING: This stores the y_true and y_pred in memory. If the dataset is too large,
+        this will cause an OOM error.
+
+        WARNING: This is a slower method of generating the prediction metrics due to it
+        having to iterate over the entire dataset in batches and predict on batches one
+        at a time.
+
+        NOTE: The purpose of this function is to account for shuffling of the dataset when
+        the dataset is batched.
+    
+        Args:
+            dataset (tf.data.Dataset): The dataset containing the true and predicted labels.
+            model (tf.keras.models.Model): The model to evaluate.
+
+        Returns:
+            ClassificationPredictionMetrics: The prediction metrics.
+    """
+    y_true = []
+    y_pred = []
+    for data, labels in dataset:
+        y_true.append(labels)
+        y_pred_probs = model.predict(data)
+        y_pred.append(tf.argmax(y_pred_probs, axis=1))
+
+    y_true = tf.concat(y_true, axis=0)
+    y_pred = tf.concat(y_pred, axis=0)
+
+    return generate_prediction_metrics(y_true, y_pred, model.name)
 
 
 def generate_prediction_metrics(y_true: ArrayLike,
