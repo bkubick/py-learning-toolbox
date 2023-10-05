@@ -67,8 +67,7 @@ def make_windows(data: tf.Tensor, window_size: int = 7, horizon: int = 1) -> typ
 def make_windowed_dataset(series: ArrayLike,
                           window_size: int = 7,
                           horizon_size: int = 1,
-                          batch_size: int = 32,
-                          shuffle_buffer: int = 1000) -> tf.data.Dataset:
+                          batch_size: int = 32) -> tf.data.Dataset:
     """ Creates a windowed dataset from the given series.
 
         Example:
@@ -82,7 +81,6 @@ def make_windowed_dataset(series: ArrayLike,
             window_size (int): the size of the window.
             horizon_size (int): the size of the horizon.
             batch_size (int): the size of the batch.
-            shuffle_buffer (int): the size of the shuffle buffer.
         
         Returns:
             (tf.data.Dataset) the windowed dataset.
@@ -90,7 +88,7 @@ def make_windowed_dataset(series: ArrayLike,
     dataset = tf.data.Dataset.from_tensor_slices(series)
     dataset = dataset.window(window_size + horizon_size, shift=1, drop_remainder=True)
     dataset = dataset.flat_map(lambda window: window.batch(window_size + horizon_size))
-    dataset = dataset.shuffle(shuffle_buffer).map(lambda window: (window[:-horizon_size], window[-horizon_size:]))
+    dataset = dataset.map(lambda window: (window[:-horizon_size], window[-horizon_size:]))
     dataset = dataset.batch(batch_size).prefetch(1)
 
     return dataset
