@@ -83,7 +83,11 @@ def generate_prediction_metrics_from_dataset_and_model(
     for data, labels in dataset:
         y_true.append(labels)
         y_pred_probs = model.predict(data, verbose=0)
-        y_pred.append(tf.argmax(y_pred_probs, axis=1))
+
+        if y_pred_probs.shape[-1] > 1:
+            y_pred.append(tf.argmax(y_pred_probs, axis=1))
+        else:
+            y_pred.append(tf.cast(tf.round(y_pred_probs), tf.int32))
 
     y_true = tf.concat(y_true, axis=0)
     y_pred = tf.concat(y_pred, axis=0)
