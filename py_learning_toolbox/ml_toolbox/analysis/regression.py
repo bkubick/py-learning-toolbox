@@ -18,6 +18,7 @@ __all__ = [
     'generate_prediction_metrics',
     'generate_prediction_metrics_dataframe',
     'generate_prediction_metrics_from_dataset_and_model',
+    'generate_prediction_metrics_from_dataset_and_models',
     'plot_predictions',
     'plot_true_versus_predicted',
     'RegressionPredictionMetrics',
@@ -94,6 +95,66 @@ def generate_prediction_metrics_from_dataset_and_model(
     y_pred = tf.concat(y_pred, axis=0)
 
     return generate_prediction_metrics(y_true, y_pred, model.name)
+
+
+def generate_prediction_metrics_from_dataset_and_models(
+        dataset: tf.data.Dataset,
+        models: typing.List[tf.keras.models.Model],
+        name: typing.Optional[str] = None) -> typing.Tuple[RegressionPredictionMetrics,
+                                                           RegressionPredictionMetrics]:
+    """ Evaluates the ensemble of models predictions using the following metrics:
+
+        - mean absolute error (MAE)
+        - mean squared error (MSE)
+        - root mean squared error (RMSE)
+        - mean absolute percentage error (MAPE)
+        - mean absolute scaled error (MASE)
+        - huber loss
+
+        NOTE: This function aggregates the metrics for multi-dimensional values using the mean
+        for the ensemble mean predictions and the median for the ensemble median predictions.
+
+        WARNING: This stores the y_true and y_pred in memory. If the dataset is too large,
+        this will cause an OOM error.
+
+        WARNING: This is a slower method of generating the prediction metrics due to it
+        having to iterate over the entire dataset in batches and predict on batches one
+        at a time.
+
+        NOTE: The purpose of this function is to account for shuffling of the dataset when
+        the dataset is batched.
+
+        Args:
+            dataset (tf.data.Dataset): The dataset containing the true and predicted labels.
+            models (List[tf.keras.models.Model]): The ensemble models to evaluate.
+            name (Optional[str]): The name to assign to the metrics.
+
+        Returns:
+            (RegressionPredictionMetrics, RegressionPredictionMetrics): The mean and median
+            prediction metrics, respectively.
+    """
+    name = name or 'ensemble'
+
+    y_true = []
+    y_mean_preds = []
+    y_median_preds = []
+    for data, labels in dataset:
+        y_true.append(labels)
+
+        ensemble_preds = []
+        for model in models:
+            pred_probs = model.predict(data, verbose=0)
+            ensemble_preds.append(tf.squeeze(pred_probs))
+
+        y_mean_preds.append(tf.reduce_mean(ensemble_preds, axis=0))
+        y_median_preds.append(np.median(ensemble_preds, axis=0))
+
+    y_true = tf.concat(y_true, axis=0)
+    y_mean_preds = tf.concat(y_mean_preds, axis=0)
+    y_median_preds = tf.concat(y_median_preds, axis=0)
+
+    return (generate_prediction_metrics(y_true, y_mean_preds, f'{name}_mean'),
+            generate_prediction_metrics(y_true, y_median_preds, f'{name}_median'))
 
 
 def generate_prediction_metrics(y_true: ArrayLike,
