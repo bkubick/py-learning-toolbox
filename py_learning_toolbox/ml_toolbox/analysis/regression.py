@@ -88,8 +88,8 @@ def generate_prediction_metrics_from_dataset_and_model(
     y_pred = []
 
     for X, y in dataset:
-        y_true.append(y)
-        y_pred.append(model.predict(X, verbose=0))
+        y_true.append(tf.squeeze(y))
+        y_pred.append(tf.squeeze(model.predict(X, verbose=0)))
 
     y_true = tf.concat(y_true, axis=0)
     y_pred = tf.concat(y_pred, axis=0)
