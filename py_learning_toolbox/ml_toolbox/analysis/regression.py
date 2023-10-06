@@ -179,6 +179,9 @@ def generate_prediction_metrics(y_true: ArrayLike,
         Returns:
             RegressionPredictionMetrics: The regression prediction metrics.
     """
+    y_true = tf.cast(y_true, tf.float32)
+    y_pred = tf.cast(y_pred, tf.float32)
+
     mae = tf.keras.metrics.mean_absolute_error(y_true, y_pred)
     mse = tf.keras.metrics.mean_squared_error(y_true, y_pred)
     rmse = tf.sqrt(mse)
