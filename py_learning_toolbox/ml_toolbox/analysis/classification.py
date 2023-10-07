@@ -32,7 +32,7 @@ __all__ = [
 @dataclass()
 class ClassificationPredictionMetrics:
     """ A dataclass for prediction metrics.
-    
+
         Attributes:
             accuracy (float): The accuracy.
             precision (float): The precision.
@@ -71,7 +71,7 @@ def generate_prediction_metrics_from_dataset_and_model(
 
         NOTE: The purpose of this function is to account for shuffling of the dataset when
         the dataset is batched.
-    
+
         Args:
             dataset (tf.data.Dataset): The dataset containing the true and predicted labels.
             model (tf.keras.models.Model): The model to evaluate.
@@ -102,7 +102,7 @@ def generate_prediction_metrics_from_dataset_and_models(
         name: typing.Optional[str] = None) -> typing.Tuple[ClassificationPredictionMetrics,
                                                            ClassificationPredictionMetrics]:
     """ Evaluates the ensemble of models predictions using the following metrics:
-    
+
         - Accuracy
         - Precision
         - Recall
@@ -166,7 +166,7 @@ def generate_prediction_metrics(y_true: ArrayLike,
         - Precision
         - Recall
         - F1
-    
+
         Args:
             y_true (ArrayLike): The true labels.
             y_pred (ArrayLike): The predicted labels.
@@ -175,6 +175,9 @@ def generate_prediction_metrics(y_true: ArrayLike,
         Returns:
             ClassificationPredictionMetrics: The prediction metrics.
     """
+    y_true = tf.cast(y_true, dtype=tf.int32)
+    y_pred = tf.cast(y_pred, dtype=tf.int32)
+
     return ClassificationPredictionMetrics(
         accuracy=accuracy_score(y_true, y_pred),
         precision=precision_score(y_true, y_pred, average='weighted'),
@@ -210,7 +213,7 @@ def plot_confusion_matrix(y_true: ArrayLike,
                           figsize: typing.Optional[typing.Tuple[int, int]] = (15, 15),
                           norm: bool = False) -> None:
     """ Plots a confusion matrix using Seaborn's heatmap. 
-    
+
         Args:
             y_true (Array): The true values.
             y_pred (Array): The predicted values.
@@ -278,7 +281,7 @@ def plot_confusion_matrix(y_true: ArrayLike,
 
 def plot_classification_report(y_labels: ArrayLike, y_pred: ArrayLike, class_names: ArrayLike) -> None:
     """ Plots the classification report.
-    
+
         Args:
             y_labels (ArrayLike[int][int]): The true labels.
             y_pred (ArrayLike[int][int]): The predicted labels.

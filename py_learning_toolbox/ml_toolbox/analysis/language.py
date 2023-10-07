@@ -118,10 +118,10 @@ def get_character_counts(sentences: ArrayLike) -> typing.Dict[str, int]:
 
 
 def plot_token_counts(token_counts: typing.Dict[str, int],
-                     n: int = 20,
-                     most_common: bool = True,
-                     figsize: typing.Tuple[int, int] = (8, 5),
-                     tick_fontsize: int = 8) -> None:
+                      n: int = 20,
+                      most_common: bool = True,
+                      figsize: typing.Tuple[int, int] = (8, 5),
+                      tick_fontsize: int = 8) -> None:
     """ Plots the n most or least common tokens (characters, words, etc.) based on the counts.
 
         Args:
