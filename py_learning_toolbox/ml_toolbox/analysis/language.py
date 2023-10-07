@@ -14,12 +14,14 @@ import tensorflow as tf
 
 if typing.TYPE_CHECKING:
     import numpy as np
+    from sklearn.preprocessing import OneHotEncoder
 
     ArrayLike = typing.Union[tf.Tensor, typing.List[typing.Any], np.ndarray]
 
 
 __all__ = [
     'export_embedding_projector_data',
+    'generate_text_from_seed',
     'get_character_counts',
     'get_word_counts',
     'plot_token_counts',
@@ -144,3 +146,42 @@ def plot_token_counts(token_counts: typing.Dict[str, int],
     plt.xlabel('Most Common Tokens', fontsize=12)
     plt.ylabel('Number of Occurences', fontsize=12)
     plt.title(title, fontsize=12)
+
+
+def generate_text_from_seed(seed_text: str,
+                            num_preds: int,
+                            model: tf.keras.models.Model,
+                            one_hot: OneHotEncoder,
+                            pred_type: typing.Optional[str] = None) -> str:
+    """ Generates a sentence from the seed text with the designated model and encoder mapper.
+
+        Args:
+            seed_text (str): the starting text for the sentence to be generated.
+            num_preds (int): how many predictions (chars/words) to add.
+            model (Model): the model to use to generate the text.
+            one_hot (OneHotEncoder): the encoder used to convert numerical indices to text.
+            pred_type (Optional[str]): the prediction type. Either 'char' or 'word'.
+                Defaults to 'word'.
+        
+        Raises:
+            ValueError: if pred_type is not either 'char' or 'word'.
+
+        Returns:
+            (str) the generated text.
+    """
+    pred_type = pred_type or 'word'
+    if pred_type not in {'char', 'word'}:
+        raise ValueError('pred_type must be either "char" or "word"')
+
+    generated_text = seed_text
+    for _ in range(num_preds):
+        pred_probs = model.predict([generated_text], verbose=0)
+        pred_index = tf.argmax(pred_probs, axis=1)[0]
+        # Due to the size of the list, rounding doesn't always gurantee a selected word
+        pred_probs[0][pred_index] = 1
+        pred_vector = tf.round(pred_probs)
+        predicted_item = str(one_hot.inverse_transform(pred_vector)[0][0])
+
+        generated_text += f'{predicted_item}'  if pred_type == 'char' else f' {predicted_item}'
+
+    return generated_text
