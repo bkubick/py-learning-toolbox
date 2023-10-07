@@ -15,6 +15,8 @@ def read_txt_file_from_directory(filepath: str, delimiter: typing.Optional[str] 
         Args:
             filepath (str): The filepath to the txt file.
             delimiter (Optional[str]): The delimiter to split the text file by.
+                Defaults to '\n'.
+                A delimiter of '' will return the entire text file as a list of length 1.
 
         Raises:
             TypeError: If the filepath does not end with .txt.
@@ -29,9 +31,10 @@ def read_txt_file_from_directory(filepath: str, delimiter: typing.Optional[str] 
         delimiter = '\n'
 
     with open(filepath, 'r') as f:
-        raw_data = f.read().split(delimiter)
+        raw_data = f.read()
+        data = raw_data.split(delimiter) if delimiter != '' else [raw_data]
 
-    return raw_data
+    return data
 
 
 def read_txt_file_from_url(url: str, delimiter: typing.Optional[str] = None) -> typing.List[str]:
@@ -40,6 +43,8 @@ def read_txt_file_from_url(url: str, delimiter: typing.Optional[str] = None) -> 
         Args:
             url (str): The url to the txt file.
             delimiter (Optional[str]): The delimiter to split the txt file by.
+                Defaults to '\n'.
+                A delimiter of '' will return the entire text file as a list of length 1.
 
         Raises:
             TypeError: If the url does not end with .txt.
@@ -60,4 +65,4 @@ def read_txt_file_from_url(url: str, delimiter: typing.Optional[str] = None) -> 
     except Exception:
         raise ValueError('Url is not valid')
 
-    return raw_text.split(delimiter)
+    return raw_text.split(delimiter) if delimiter != '' else [raw_text]
