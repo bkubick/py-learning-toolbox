@@ -48,7 +48,6 @@ def export_and_verify_model(model: tf.keras.models.Model,
                             file_type: typing.Optional[str] = None,
                             filepath: typing.Optional[str] = None,
                             custom_objects: typing.Optional[typing.Dict[str, typing.Any]] = None,
-                            metrics: typing.Optional[typing.List[str]] = None,
                             optimizer: typing.Optional[typing.Union[str, typing.Callable]] = None,
                             tolerance: float = 1e-08) -> bool:
     """ Exports a model and verifies that it can be loaded and evaluated to 'close' to the original model.
@@ -65,7 +64,6 @@ def export_and_verify_model(model: tf.keras.models.Model,
             file_type (Optional[str]): the file type to save the model as. Defaults to None.
             filepath (Optional[str]): the file path to save the model to. Defaults to './models/'.
             custom_objects (Optional[Dict]): the custom layers to pass to tf.keras.models.load_model. Defaults to None.
-            metrics (Optional[List[str]]): the metrics to use when compiling the model. Defaults to None.
             optimizer (Optional[Union[str, Callable]]): the optimizer to use when compiling the model.
                 Defaults to "Adam".
             tolerance (float): the tolerance to use when comparing the original model's evaluation metrics to the
@@ -86,6 +84,11 @@ def export_and_verify_model(model: tf.keras.models.Model,
     model_eval = model.evaluate(validation_data, verbose=0)
     logging.info(f'Original Model Evaluation Metrics: {model_eval}')
 
+    metrics = model.metrics_names or []
+    logging.info(f'Model Metrics to Compare: {metrics}')
+    if 'loss' in metrics:
+        metrics.remove('loss')
+
     if strip_pruning:
         model_export = tfmot.sparsity.keras.strip_pruning(model)
     else:
@@ -99,7 +102,7 @@ def export_and_verify_model(model: tf.keras.models.Model,
     model_loaded: tf.keras.models.Model = tf.keras.models.load_model(filepath, custom_objects=custom_objects)
     model_loaded.compile(loss=loss,
                          optimizer=optimizer or tf.keras.optimizers.legacy.Adam(),
-                         metrics=metrics or [])
+                         metrics=metrics)
 
     model_loaded_eval = model_loaded.evaluate(validation_data, verbose=0)
     logging.info(f'Loaded Model Evaluation Metrics: {model_loaded_eval}')
