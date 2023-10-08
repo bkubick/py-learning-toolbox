@@ -17,6 +17,7 @@ setup(
         'tensorboard>=2.12.3',
         'tensorflow>=2.12.0',
         'tensorflow-hub>=0.14.0',
+        'tensorflow-model-optimization>=0.6.0',
     ],
     entry_points={
         'console_scripts': [
