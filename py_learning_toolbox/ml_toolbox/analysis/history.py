@@ -207,9 +207,15 @@ def plot_learning_rate_versus_loss(learning_rates: typing.List[float],
             losses (List[float]): The losses.
             figsize (Tuple[int, int]): The size of the figure.
     """
+    min_loss_index = tf.argmin(losses)
+    min_loss_lr = learning_rates[min_loss_index]
+
     plt.figure(figsize=figsize)
     plt.xlabel('Learning Rate')
     plt.ylabel('Loss')
     plt.title('Learning Rate vs. Loss')
-    plt.plot(learning_rates, losses)
+    plt.plot(learning_rates, losses, label='Loss')
+    plt.axvline(x = min_loss_lr, color='r', label=f'Min Loss LR: {min_loss_lr:.2e}')
+    plt.axvline(x=min_loss_lr / 10, color = 'y', label=f'10x Smaller Min Loss LR: {min_loss_lr / 10:.2e}')
     plt.xscale('log')
+    plt.legend(loc='upper right', fontsize=8)
