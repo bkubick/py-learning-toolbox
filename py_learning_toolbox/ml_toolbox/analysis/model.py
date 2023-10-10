@@ -81,13 +81,11 @@ def export_and_verify_model(model: tf.keras.models.Model,
         logging.info(f'Creating directories: {dirs}')
         os.makedirs(dirs)
 
+    logging.info(f'Model Metrics to Compare: {model.metrics_names}')
+    metrics = [metric for metric in model.metrics_names if metric != 'loss']
+
     model_eval = model.evaluate(validation_data, verbose=0)
     logging.info(f'Original Model Evaluation Metrics: {model_eval}')
-
-    metrics = model.metrics_names or []
-    logging.info(f'Model Metrics to Compare: {metrics}')
-    if 'loss' in metrics:
-        metrics.remove('loss')
 
     if strip_pruning:
         model_export = tfmot.sparsity.keras.strip_pruning(model)
