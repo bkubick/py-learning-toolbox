@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 import typing
 
 import numpy as np
 import tensorflow as tf
 
 from ... import _utils
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 if typing.TYPE_CHECKING:

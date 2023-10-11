@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = ['make_future_forecasts', 'plot_price_vs_timesteps']
