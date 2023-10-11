@@ -7,6 +7,7 @@
 """
 
 from . import dev
+from . import types
 
 
-__all__ = ['dev']
+__all__ = ['dev', 'types']
