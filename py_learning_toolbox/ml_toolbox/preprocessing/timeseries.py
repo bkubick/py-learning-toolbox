@@ -8,6 +8,8 @@ import typing
 import numpy as np
 import tensorflow as tf
 
+from ... import _utils
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -40,6 +42,7 @@ def get_labeled_windows(windows: tf.Tensor, horizon: int = 1) -> typing.Tuple[tf
     return windows[:, :-horizon], windows[:, -horizon:]
 
 
+@_utils.dev.obsolete('make_windows is obsolete. Use make_windowed_dataset instead.')
 def make_windows(data: tf.Tensor, window_size: int = 7, horizon: int = 1) -> typing.Tuple[typing.List, typing.List]:
     """ Turns a 1D array into a 2D array of sequential labeled windows of
         window_size with horizon size labels.
