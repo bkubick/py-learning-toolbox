@@ -19,7 +19,6 @@ if typing.TYPE_CHECKING:
 __all__ = [
     'get_future_dates',
     'get_labeled_windows',
-    'make_future_forecasts',
     'make_windowed_dataset',
     'make_windows',
 ]
@@ -99,41 +98,6 @@ def make_windowed_dataset(series: ArrayLike,
     dataset = dataset.batch(batch_size).prefetch(1)
 
     return dataset
-
-
-def make_future_forecasts(values: tf.data.Dataset,
-                          model: tf.keras.models.Model,
-                          into_future: int,
-                          window_size: int,
-                          log_step: bool = False) -> typing.List[float]:
-    """ Make future forecasts for a set number of steps.
-
-        Args:
-            values (tf.data.Dataset): the values to make forecasts on.
-            model (tf.keras.models.Model): the model to make the predictions with.
-            into_future (int): how far into the future to make predictions.
-            window_size (int): how big of a window to use when making forecasts.
-            log_step (bool): whether or not to log the step in the process.
-
-        Returns:
-            (typing.List[float]) the future forecasts.
-    """
-    future_forecast = []
-    last_window = values[-window_size:]
-
-    for _ in range(into_future):
-        # Making forcasts on own forecast
-        future_pred = model.predict(tf.expand_dims(last_window, axis=0), verbose=0)
-        pred = tf.squeeze(future_pred).numpy()
-
-        if log_step:
-            logger.info(f'Predicting On: \n {last_window} -> Prediction: {pred}')
-
-        future_forecast.append(pred)
-
-        last_window = np.append(last_window, future_pred)[-window_size:]
-
-    return future_forecast
 
 
 def get_future_dates(start_date: np.datetime64, into_future: int = 7, offset: int = 1) -> np.ndarray[np.datetime64]:

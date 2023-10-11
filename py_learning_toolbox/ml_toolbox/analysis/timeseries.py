@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 
-__all__ = ['plot_price_vs_timesteps']
+__all__ = ['make_future_forecasts', 'plot_price_vs_timesteps']
 
 
 def plot_price_vs_timesteps(timesteps: np.ndarray[np.datetime64],
@@ -48,3 +48,38 @@ def plot_price_vs_timesteps(timesteps: np.ndarray[np.datetime64],
         plt.legend(fontsize=14)
 
     plt.grid(True)
+
+
+def make_future_forecasts(values: tf.data.Dataset,
+                          model: tf.keras.models.Model,
+                          into_future: int,
+                          window_size: int,
+                          log_step: bool = False) -> typing.List[float]:
+    """ Make future forecasts for a set number of steps.
+
+        Args:
+            values (tf.data.Dataset): the values to make forecasts on.
+            model (tf.keras.models.Model): the model to make the predictions with.
+            into_future (int): how far into the future to make predictions.
+            window_size (int): how big of a window to use when making forecasts.
+            log_step (bool): whether or not to log the step in the process.
+
+        Returns:
+            (typing.List[float]) the future forecasts.
+    """
+    future_forecast = []
+    last_window = values[-window_size:]
+
+    for _ in range(into_future):
+        # Making forcasts on own forecast
+        future_pred = model.predict(tf.expand_dims(last_window, axis=0), verbose=0)
+        pred = tf.squeeze(future_pred).numpy()
+
+        if log_step:
+            logger.info(f'Predicting On: \n {last_window} -> Prediction: {pred}')
+
+        future_forecast.append(pred)
+
+        last_window = np.append(last_window, future_pred)[-window_size:]
+
+    return future_forecast
