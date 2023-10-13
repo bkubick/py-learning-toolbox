@@ -1,0 +1,245 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "80022b2d-429d-4e23-ace1-4d165869dabb",
+   "metadata": {},
+   "source": [
+    "# PROJECT_TITLE"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8638e1c3-15b1-47b6-84b7-767c67fd3305",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Setup\n",
+    "\n",
+    "The setup required to be ran prior to running anything else within this notebook. This includes setting up the directory structure and installing libraries if on Google Colab, details regarding the last time the notebook was ran, importing libraries used throughout the notebook, and setting up the environment."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6749c6d7-2b71-4333-abd1-3dc071ecbaca",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "### Google Colab\n",
+    "\n",
+    "Need to figure out if notebook is being ran on google colab or local. This will determine which commands need to run and how to setup the CPU/GPU being used.\n",
+    "\n",
+    "If on google colab, then install the repository, [py-learning-toolbox](https://github.com/bkubick/py-learning-toolbox), as a package for use."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "84873143-be2c-4d30-8cb1-a1a9317f457e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "try:\n",
+    "  from google import colab\n",
+    "  GOOGLE_COLAB = True\n",
+    "except Exception:\n",
+    "  GOOGLE_COLAB = False\n",
+    "\n",
+    "GOOGLE_COLAB"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "daf326fc-98c2-4488-8b93-e0dcb3291cf4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "if GOOGLE_COLAB:\n",
+    "  !pip install py-learning-toolbox@git+https://github.com/bkubick/py-learning-toolbox.git\n",
+    "  !pltb create_dirs ."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "93541421-0cc2-4389-8936-5735257cedca",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "### Imports\n",
+    "\n",
+    "All required libraries required to completely run this notebook. This needs to be ran prior to running any other additional imports."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b53b4269-9da2-45fc-afae-84e6d29ce38d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import datetime\n",
+    "import logging\n",
+    "import sys\n",
+    "import typing\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import tensorflow as tf"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa34ccde-e443-4102-b3d2-d354dd1789f2",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "### Details\n",
+    "\n",
+    "Details associated with when this notebook was run."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "212c1cfd-5c9b-4403-8ebe-60b6034898ad",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(f'Notebook last run (end-to-end): {datetime.datetime.now()}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ddfd2dd7-8ea8-42e7-a3f4-569885bb5f1b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "!python --version"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "170683dc-dc53-49cb-88df-80b1c2b2c861",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print('TensorFlow Version: ', tf.__version__)\n",
+    "print('Numpy Version: ', np.__version__)\n",
+    "print('Pandas Version: ', pd.__version__)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6c879671-ae39-47c9-802b-1358092d7dd2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print('Physical Devices Available:\\n', tf.config.list_physical_devices())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7eb5204d-83a7-431a-88a3-cf9ad5a94a19",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "### Environment\n",
+    "Setting up the environment for this notebook."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "941029be-a98a-4227-922b-05a9b5acccc1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "logging.basicConfig(stream=sys.stdout, level=logging.INFO)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9e880e8e-c75b-4e8c-a8af-f226d91a2e8b",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Global Constants\n",
+    "\n",
+    "Constants used throughout this notebook."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a66b3473-276e-43bf-8f39-9d7ed8277fde",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Helpers\n",
+    "\n",
+    "Defining helper functions to make split certain functionality out of tasks."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6eb0c005-4451-400c-9b81-2edc287556e2",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Downloading, Analyzing, & Creating Datasets"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a81e098f-4329-4452-b956-80797f66d79e",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Experiments"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "294f7429-50b6-42f6-9f02-d846ecfbc1fe",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true
+   },
+   "source": [
+    "## Analysis"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+from glob import glob
 from setuptools import setup, find_packages
 
 setup(
@@ -9,6 +10,8 @@ setup(
     description='Python toolbox for my perosnal AI, machine learning, genetic algorithms, and deep learning projects.',
     author='Brandon Kubick',
     packages=find_packages(),
+    include_package_data = True,
+    package_data={'py_learning_toolbox': ['_commands/templates/notebook.json']},
     install_requires=[
         'matplotlib>=3.7.1',
         'numpy>=1.23.5',
@@ -21,7 +24,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pltb_setup_project = py_learning_toolbox.setup_project:main',
+            'pltb = py_learning_toolbox._commands.main:main', 
         ],
     },
 )
