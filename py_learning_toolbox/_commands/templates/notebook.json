@@ -59,7 +59,7 @@
    "source": [
     "if GOOGLE_COLAB:\n",
     "  !pip install py-learning-toolbox@git+https://github.com/bkubick/py-learning-toolbox.git\n",
-    "  !pltb create_dirs ."
+    "  !pltb create_project ."
    ]
   },
   {
