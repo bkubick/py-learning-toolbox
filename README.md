@@ -34,29 +34,29 @@ This repo relies on a specific structure when handling files for a given project
 ### Project Setup
 Due to some of the default directory names I use as the path to store logs, checkpoints, and models, there is a desired directory setup for each project that is preferred when using these utilities. To properly setup the directory structure, after the package is installed on local, run the following command to create the directory structure for each corresponding project being worked on.
 
-Additionally, the python notebook layout for many projects were just copied over at the beginning of each project, so to mitigate the amount of time used to create new notebooks for projects, the command also creates a jupyter notebook with the same name as the project name.
+Additionally, the python notebook layout for many projects were just copied over at the beginning of each project, so to mitigate the amount of time used to create new notebooks for projects, the command also has the option to create a jupyter notebook with the same name as the project name.
 
 ```
 pltb create_project [project_name_or_dir]
 ```
 
+To include the notebook creation:
+
+```
+pltb create_project [project_name_or_dir] --notebook
+```
+
 For instance, if you want to look at tweets to determine if it is talking about a disaster or not, you might want to setup a project called `disaster_tweets` and it lives within the `projects` directory (`projects/disaster_tweets`). To do this, the command would look like:
 
 ```
-pltb create_project projects/disaster_tweets
+pltb create_project projects/disaster_tweets --notebook
 ```
 
 Running this command creates the required dirs in `projects/disaster_tweets`, as well as the `disaster_tweets.ipynb` that lives in the directory.
 
-### Directory Setup
-If you just want to create the directory structure for a new project without the `.ipynb`, run the following command.
-
-```
-pltb create_dirs [project_dir]
-```
 
 ### Notebook Setup
-If you already created the project dirs, but now want to generate an `.ipynb` for the project, run the following command.
+If you already created the project without a notebook, but want to generate an `.ipynb` for the project, run the following command.
 
 ```
 pltb create_notebook [project_dir] [notebook_name]

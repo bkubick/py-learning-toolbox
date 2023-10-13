@@ -18,29 +18,24 @@ def help() -> None:
     print('    --help: Print the help message.')
     print('    create_project: Create the directory structure for a new project.')
     print('    create_notebook: Create a template for a Jupyter notebook.')
-    print('    create_dirs: Create the directory structure for a new project.')
 
 
 def create_project() -> None:
     """ This function creates the directory structure for a new project.
     """
-    create_dirs()
-    create_notebook()
-
-
-def create_dirs() -> None:
-    """ This function creates the directory structure for a new project.
-    """
     if len(sys.argv) < 3:
-        print('Please provide the project directory name or path or use `pltb create_dirs --help` for more information')
+        print('Please provide the project directory name or path or use `pltb create_project --help` for more information')
         return
 
     if sys.argv[2] in HELP_ALIAS:
         print('Creates the directory structure for a new project.')
-        print('    Usage: pltb create_dirs <project_directory>')
+        print('    Usage: pltb create_project <project_directory>')
         return
 
     create_project_directories(sys.argv[2])
+
+    if len(sys.argv) >= 4 and sys.argv[3] == '--notebook':
+        create_notebook()
 
 
 def create_notebook() -> None:
@@ -56,7 +51,13 @@ def create_notebook() -> None:
         return
 
     filepath = sys.argv[2]
-    filename = sys.argv[3] if len(sys.argv) > 3 else filepath.split('/')[-1]
+
+    if len(sys.argv) >= 4 and sys.argv[3] == '--notebook':
+        filename = filepath.split('/')[-1]
+    elif len(sys.argv) >= 4:
+        filename = sys.argv[3]
+    else:
+        filename = filepath.split('/')[-1]
 
     create_notebook_template(filepath, filename)
 
@@ -69,7 +70,6 @@ def main():
             --help: Print the help message (--h, --help).
             create_project: Create the directory structure for a new project.
             create_notebook: Create a template for a Jupyter notebook.
-            create_dirs: Create the directory structure for a new project.
     """
     if len(sys.argv) == 1:
         print('Please provide the command name')
@@ -78,7 +78,6 @@ def main():
     commands = {
         'create_project': create_project,
         'create_notebook': create_notebook,
-        'create_dirs': create_dirs,
     }
 
     for help_command in HELP_ALIAS:
