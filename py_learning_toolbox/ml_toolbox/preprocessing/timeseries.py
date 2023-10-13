@@ -5,6 +5,7 @@ from __future__ import annotations
 import typing
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from ... import _utils
@@ -15,6 +16,7 @@ if typing.TYPE_CHECKING:
 
 
 __all__ = [
+    'cyclically_encode_timestamp',
     'get_future_dates',
     'get_labeled_windows',
     'make_windowed_dataset',
@@ -118,3 +120,65 @@ def get_future_dates(start_date: np.datetime64, into_future: int = 7, offset: in
     end_date = start_date + np.timedelta64(into_future, 'D')
 
     return np.arange(start_date, end_date, dtype='datetime64[D]')
+
+
+def cyclically_encode_timestamp(timestamps: typing.Union[typing.List, np.ndarray],
+                                time_period: typing.Optional[str] = None) -> tf.Tensor:
+    """ Creates a cyclically encoded timestamp based off the period.
+
+        Args:
+            timestamps (typing.Union[typing.List, np.ndarray]): the hours of the day to cyclically encode.
+            time_period (Optional[str]): the period to encode the hours with. Defaults to 'day_by_week'. Options:
+                [`day_by_year`, `day_by_month`, `day_by_week`, `month_by_year`, `hour_by_day`,
+                `minute_by_hour`, `second_by_minute`]
+                    
+
+        Raises:
+            ValueError: if the period is not one of the following:
+                - day_by_year
+                - day_by_month
+                - day_by_week
+                - month_by_year
+                - hour_by_day
+                - minute_by_hour
+                - second_by_minute
+
+        Returns:
+            (tf.Tensor) the cyclically encoded values for the given period and timestamps.
+    """
+    period = time_period or 'day_by_week'
+    timestamps: pd.DatetimeIndex = pd.to_datetime(timestamps)
+
+    if period == 'day_by_year':
+        mapping_func: typing.Callable[[pd.Timestamp], int] = lambda x: x.to_pydatetime().timetuple().tm_yday
+        period_steps = timestamps.map(mapping_func)
+        max_period_value = 366
+    elif period == 'day_by_month':
+        period_steps = timestamps.day
+        max_period_value = 31
+    elif period == 'day_by_week':
+        mapping_func: typing.Callable[[pd.Timestamp], int] = lambda x: x.to_pydatetime().timetuple().tm_wday
+        period_steps = timestamps.map(mapping_func)
+        max_period_value = 7
+    elif period == 'month_by_year':
+        period_steps = timestamps.month
+        max_period_value = 12
+    elif period == 'hour_by_day':
+        period_steps = timestamps.hour
+        max_period_value = 24
+    elif period == 'minute_by_hour':
+        period_steps = timestamps.minute
+        max_period_value = 60
+    elif period == 'second_by_minute':
+        period_steps = timestamps.second
+        max_period_value = 60
+    else:
+        period_types = ['day_by_year', 'day_by_month', 'day_by_week', 'month_by_year', 'hour_by_day',
+                        'minute_by_hour', 'second_by_minute']
+        raise ValueError(f'Invalid time_period: {period}: must be one of the following: {period_types}')
+
+    period_tensor = tf.convert_to_tensor(period_steps.to_numpy(), dtype=tf.float32)
+    period_sin = tf.math.sin(2 * np.pi * period_tensor / max_period_value)
+    period_cos = tf.math.cos(2 * np.pi * period_tensor / max_period_value)
+
+    return tf.stack([period_sin, period_cos], axis=1)
